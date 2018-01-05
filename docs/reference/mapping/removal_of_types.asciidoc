@@ -1,27 +1,19 @@
 [[removal-of-types]]
-== Removal of mapping types
+== 映射类型的移除
 
-IMPORTANT: Indices created in Elasticsearch 6.0.0 or later may only contain a
-single <<mapping-type,mapping type>>.  Indices created in 5.x with multiple
-mapping types will continue to function as before in Elasticsearch 6.x.
-Mapping types will be completely removed in Elasticsearch 7.0.0.
+IMPORTANT: 在 Elasticsearch 6.0.0 或更新的版本中被创建的索引将只包含一个<<mapping-type,映射类型>>。
+在 5.x 被创建的多映射类型在 6.x 会继续像以前一样运作。而在 7.0.0 ，映射类型将会被完全移除。
 
 [float]
-=== What are mapping types?
+=== 什么是映射类型？
 
-Since the first release of Elasticsearch, each document has been stored in a
-single index and assigned a single mapping type.  A mapping type was used to
-represent the type of document or entity being indexed, for instance a
-`twitter` index might have a `user` type and a `tweet` type.
+自从 ElasticSearch 第一次发布以来，每个文档被存到一个索引，并且被分配一个映射类型。
+映射类型用于表示文档或被索引的实体的类型，例如， `Twitter` 索引可能具有 `user` 类型和 `tweet` 类型。
 
-Each mapping type could have its own fields, so the `user` type might have a
-`full_name` field, a `user_name` field, and an `email` field, while the
-`tweet` type could have a `content` field, a `tweeted_at` field and, like the
-`user` type, a `user_name` field.
+每个索引类型都含有自己的字段，例如， `user` 类型可能会有 `full_name` 字段、 `user_name` 字段和 `email` 字段，
+而 `tweet` 类型可能有 `content` 字段、 `tweeted_at` 字段和类似 `user` 类型的 `user_name` 字段。
 
-Each document had a `_type` meta-field containing the type name, and searches
-could be limited to one or more types by specifying the type name(s) in the
-URL:
+每个文档都有一个元字段 `_type` ，它包含类型的名称。通过在 URL 指定类型名称，搜索可以被限定为一种或多种类型：
 
 [source,js]
 ----
@@ -36,14 +28,9 @@ GET twitter/user,tweet/_search
 ----
 // NOTCONSOLE
 
-The `_type` field was combined with the document's `_id` to generate a `_uid`
-field, so documents of different types with the same `_id` could exist in a
-single index.
+`type` 字段和文档的 `_id` 字段组合后生成 `_uid` 字段，所以不同类型但有着相同 `_id` 的文档是可以存在同一个索引的。
 
-Mapping types were also used to establish a
-<<mapping-parent-field,parent-child relationship>>
-between documents, so documents of type `question` could be parents to
-documents of type `answer`.
+映射类型也可以用于建立文档间的<<mapping-parent-field,父子关系>>，例如文档类型 `question` 可以是文档类型 `answer` 的父类型。
 
 [float]
 === Why are mapping types being removed?
