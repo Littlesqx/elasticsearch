@@ -10,8 +10,7 @@ IMPORTANT: 在 Elasticsearch 6.0.0 或更新的版本中被创建的索引将只
 自从 ElasticSearch 第一次发布以来，每个文档被存到一个索引，并且被分配一个映射类型。
 映射类型用于表示文档或被索引的实体的类型，例如， `Twitter` 索引可能具有 `user` 类型和 `tweet` 类型。
 
-每个索引类型都含有自己的字段，例如， `user` 类型可能会有 `full_name` 字段、 `user_name` 字段和 `email` 字段，
-而 `tweet` 类型可能有 `content` 字段、 `tweeted_at` 字段和类似 `user` 类型的 `user_name` 字段。
+每个索引类型都含有自己的字段，例如， `user` 类型可能会有 `full_name` 字段、 `user_name` 字段和 `email` 字段，而 `tweet` 类型可能有 `content` 字段、 `tweeted_at` 字段和类似 `user` 类型的 `user_name` 字段。
 
 每个文档都有一个元字段 `_type` ，它包含类型的名称。通过在 URL 指定类型名称，搜索可以被限定为一种或多种类型：
 
@@ -33,33 +32,18 @@ GET twitter/user,tweet/_search
 映射类型也可以用于建立文档间的<<mapping-parent-field,父子关系>>，例如文档类型 `question` 可以是文档类型 `answer` 的父类型。
 
 [float]
-=== Why are mapping types being removed?
+=== 为什么映射类型会被移除？
 
-Initially, we spoke about an ``index'' being similar to a ``database'' in an
-SQL database, and a ``type'' being equivalent to a
-``table''.
+最初，我们说 "index" 类似于 SQL 数据库的 "database" ，而 "type" 类似于 "table" 。
 
-This was a bad analogy that led to incorrect assumptions. In an SQL database,
-tables are independent of each other.  The columns in one table have no
-bearing on columns with the same name in another table.  This is not the case
-for fields in a mapping type.
+这是一个不好的类比，因为它导致了不正确的假设。在 SQL 数据库中，表格之间是相互独立的。一个表格的列与另一个表格中具有相同名称的列是没有关系的。但在映射类型中并非如此。
 
-In an Elasticsearch index, fields that have the same name in different mapping
-types are backed by the same Lucene field internally.  In other words, using
-the example above, the `user_name` field in the `user` type is stored in
-exactly the same field as the `user_name` field in the `tweet` type, and both
-`user_name` fields must have the same mapping (definition) in both types.
+对于 ElasticSearch 的索引，不同映射类型中名称相同的字段在内部由相同的 Lucene 字段支持。也就是说，如果使用上面的例子， `user` 类型的 `user_name` 字段存储在与 `tweet` 类型的 `user_name` 字段相同的字段，并且两个 `user_name` 字段在两种类型里都必须具有相同的映射定义。
 
-This can lead to frustration when, for example, you want `deleted` to be a
-`date` field in one type and a `boolean` field in another type in the same
-index.
+这会导致失败的场景，比如，在某一个类型里，你想把 `deleted` 设为 `date` 字段，而在同索引的另一个类型里设为 `boolean` 字段。
+最重要的是，在同一索引中存储具有少量或不具有共有字段的不同实体会导致数据稀疏，并干扰 Lucene 有效压缩文档的能力。
 
-On top of that, storing different entities that have few or no fields in
-common in the same index leads to sparse data and interferes with Lucene's
-ability to compress documents efficiently.
-
-For these reasons, we have decided to remove the concept of mapping types from
-Elasticsearch.
+由于这些原因，我们决定从 Elasticsearch 中移除映射类型。
 
 [float]
 === Alternatives to mapping types
