@@ -46,40 +46,30 @@ GET twitter/user,tweet/_search
 由于这些原因，我们决定从 Elasticsearch 中移除映射类型。
 
 [float]
-=== Alternatives to mapping types
+=== 映射类型的替代方案
 
 [float]
-==== Index per document type
+==== 索引每个文档类型
 
-The first alternative is to have an index per document type.  Instead of
-storing tweets and users in a single `twitter` index, you could store tweets
-in the `tweets` index and users in the `user` index. Indices are completely
-independent of each other and so there will be no conflict of field types
-between indices.
+第一种替代方案是索引每个文档类型。
+不要将 `tweents` 和 `users` 存储在单个 `twitter` 索引中，而是将 tweets 存储在 `tweets` 索引中， users 存储在 `user` 索引中。
+索引是完全互相独立的，所以索引间的字段类型不会发生冲突。
 
-This approach has two benefits:
+这个方案有两个好处：
 
-* Data is more likely to be dense and so benefit from compression techniques
-  used in Lucene.
+ * 数据更可能地密集，这将受益于 Lucene 的压缩技术。
 
-* The term statistics used for scoring in full text search are more likely to
-  be accurate because all documents in the same index represent a single
-  entity.
+ * 由于同一索引所有文档都代表单一实体，全文搜索中用于计分的统计项将更可能地准确。
 
-Each index can be sized appropriately for the number of documents it will
-contain: you can use a smaller number of primary shards for `users` and a
-larger number of primary shards for `tweets`.
+每个索引的大小可以根据文档数量适当调整：对于 `user` 索引，你可以使用较小数量的主分片，而对于 `tweets` 索引，可以使用较大数量的主分片。
 
 [float]
-==== Custom type field
+==== 自定义类型字段
 
-Of course, there is a limit to how many primary shards can exist in a cluster
-so you may not want to waste an entire shard for a collection of only a few
-thousand documents.  In this case, you can implement your own custom `type`
-field which will work in a similar way to the old `_type`.
+当然，集群中主分片的数量应该是有限制的，因此你不能浪费将一个完整的分片用于收集仅仅几千个文档。
+在这种情况下，你可以实现自定义的继续像旧 `_type` 字段工作的 `type` 字段。
 
-Let's take the `user`/`tweet` example above.  Originally, the workflow would
-have looked something like this:
+让我们以前面的 `user`/`tweet` 为例。通常，工作的时候会遇到这样的情况：
 
 [source,js]
 ----
@@ -128,7 +118,7 @@ GET twitter/tweet/_search
 ----
 // NOTCONSOLE
 
-You could achieve the same thing by adding a custom `type` field as follows:
+你可以通过添加自定义类型字段来实现相同的功能，如下所示：
 
 [source,js]
 ----
@@ -183,17 +173,14 @@ GET twitter/_search
 }
 ----
 // NOTCONSOLE
-<1> The explicit `type` field takes the place of the implicit `_type` field.
+<1> 显式 `type` 字段代替隐式 `_type` 字段。
 
 [float]
-==== Parent/Child without mapping types
+==== 没有映射类型的父子关系
 
-Previously, a parent-child relationship was represented by making one mapping
-type the parent, and one or more other mapping types the children.  Without
-types, we can no longer use this syntax.  The parent-child feature will
-continue to function as before, except that the way of expressing the
-relationship between documents has been changed to use the new
-<<parent-join,`join` field>>.
+以前，文档父子关系的表示是通过设置一个映射类型为父亲，而另外的一个或多个映射类型为孩子。
+没有了映射类型，我们不能再使用这个语法了。父子关系的功能会继续工作，
+但表示文档之间关系的方式已更改为使用新的 <<parent-join,`join` 字段>>。
 
 
 [float]
