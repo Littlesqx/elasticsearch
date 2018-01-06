@@ -228,18 +228,16 @@ Elasticsearch 9.x::
 * `include_type_name` 参数被移除。
 
 [float]
-=== Migrating multi-type indices to single-type
+=== 将多类型的索引迁移到单类型
 
-The <<docs-reindex,Reindex API>> can be used to convert multi-type indices to
-single-type indices. The following examples can be used in Elasticsearch 5.6
-or Elasticsearch 6.x.  In 6.x, there is no need to specify
-`index.mapping.single_type` as that is the default.
+<<docs-reindex,Reindex API>> 可用于将多类型索引转换为单类型索引。
+下面的例子可用于 Elasticsearch 5.6 或 Elasticsearch 6.x 。
+在 6.x 中，不需要指定 `index.mapping.single_type` ，因为那是默认值。
 
 [float]
-==== Index per document type
+==== 索引每个文档类型
 
-This first example splits our `twitter` index into a `tweets` index and a
-`users` index:
+第一个例子是将我们的 `twitter` 索引分成一个 `tweets` 索引和一个 `users` 索引：
 
 [source,js]
 ----
@@ -312,11 +310,10 @@ POST _reindex
 // NOTCONSOLE
 
 [float]
-==== Custom type field
+==== 自定义类型字段
 
-This next example adds a custom `type` field and sets it to the value of the
-original `_type`.  It also adds the type to the `_id` in case there are any
-documents of different types which have conflicting IDs:
+下面一个例子是添加一个自定义 `type` 字段，并且将它设置为原始 `_type` 的值。它还需要将类型添加到 `_id` ，
+以防不同类型的某些文档存在冲突的 IDs 。
 
 [source,js]
 ----
