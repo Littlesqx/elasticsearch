@@ -2,7 +2,7 @@
 == 映射类型的移除
 
 IMPORTANT: 在 Elasticsearch 6.0.0 或更新的版本中被创建的索引将只包含一个<<mapping-type,映射类型>>。
-在 5.x 被创建的多映射类型在 6.x 会继续像以前一样运作。而在 7.0.0 ，映射类型将会被完全移除。
+在 5.x 被创建的多映射类型在 6.x 会继续像以前一样工作。而在 7.0.0 ，映射类型将会被完全移除。
 
 [float]
 === 什么是映射类型？
@@ -212,8 +212,8 @@ Elasticsearch 7.x::
 
 * `type` 参数在 URLs 中是可选的。例如索引一个文档不再需要该文档的 `type` 。新索引 APIs 在显示 id 的情况下是 `PUT {index}/_doc/{id}` ，而对于自动生成 ids 将是 `POST {index}/_doc` 。
 
-* `GET|PUT _mapping` APIs 支持一个查询参数（`include_type_name`），该参数指定 body 是否包含类型名称的层级。
-  默认值为 `true`。在 7.x 中，没有明确类型的索引会使用一个假的类型名称 `_doc` 。
+* `GET|PUT _mapping` APIs 支持一个查询参数（ `include_type_name` ），该参数指定 body 是否包含类型名称的层级。
+  默认值为 `true` 。在 7.x 中，没有明确类型的索引会使用一个假的类型名称 `_doc` 。
 
 * `_default_` 映射类型被移除。
 
@@ -221,7 +221,7 @@ Elasticsearch 8.x::
 
 * `type` 参数在 URLs 中不再被支持。
 
-* `include_type_name` 参数默认值为 `false`。
+* `include_type_name` 参数默认值为 `false` 。
 
 Elasticsearch 9.x::
 
@@ -313,7 +313,7 @@ POST _reindex
 ==== 自定义类型字段
 
 下面一个例子是添加一个自定义 `type` 字段，并且将它设置为原始 `_type` 的值。它还需要将类型添加到 `_id` ，
-以防不同类型的某些文档存在冲突的 IDs 。
+以防止不同类型的某些文档存在冲突的 IDs 。
 
 [source,js]
 ----
