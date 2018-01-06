@@ -179,64 +179,53 @@ GET twitter/_search
 ==== 没有映射类型的父子关系
 
 以前，文档父子关系的表示是通过设置一个映射类型为父亲，而另外的一个或多个映射类型为孩子。
-没有了映射类型，我们不能再使用这个语法了。父子关系的功能会继续工作，
-但表示文档之间关系的方式已更改为使用新的 <<parent-join,`join` 字段>>。
+没有了映射类型，我们不能再使用这种语法了。文档父子关系的功能会继续工作，
+但实现文档之间关系的方式已更改为使用新的 <<parent-join,`join` 字段>>。
 
 
 [float]
-=== Schedule for removal of mapping types
+=== 移除映射类型的时间表
 
-This is a big change for our users, so we have tried to make it as painless as
-possible.  The change will roll out as follows:
+对于我们的用户，这是一个巨大的变动，所以我们努力让过程尽可能无痛度过。
+变动将会如下地展开：
 
 Elasticsearch 5.6.0::
 
-* Setting `index.mapping.single_type: true` on an index will enable the
-  single-type-per-index behaviour which will be enforced in 6.0.
+* 为一个索引设置 `index.mapping.single_type: true` 以启用单一类型索引的行为在 6.0 将变为强制性。
 
-* The <<parent-join,`join` field>> replacement for parent-child is available
-  on indices created in 5.6.
+* 代替 parent-child 的 <<parent-join,`join` 字段>> 在 5.6 版本被创建的索引可用。
 
 Elasticsearch 6.x::
 
-* Indices created in 5.x will continue to function in 6.x as they did in 5.x.
+* 在 5.x 版本中被创建的索引，在 6.x 中会继续像在 5.x 中一样工作。
 
-* Indices created in 6.x only allow a single-type per index.  Any name
-  can be used for the type, but there can be only one. The preferred type name
-  is `_doc`, so that index APIs have the same path as they will have in 7.0:
-  `PUT {index}/_doc/{id}` and `POST {index}/_doc`
+* 在 6.x 被创建的索引仅仅允许一个索引存在单一类型。 可以用任何名称命名类型，但只能有一个类型。
+  首选的类型名称是 `_doc` ，所以索引 APIs 会具有与 7.0 相同的路径： `PUT {index}/_doc/{id}` and `POST {index}/_doc` 。
 
-* The `_type` name can no longer be combined with the `_id` to form the `_uid`
-  field. The `_uid` field has become an alias for the `_id` field.
+* `_type` 字段不再与 `_id` 字段结合生成 `_uid` 字段。 `_uid` 字段成为了 `_id` 字段的别名。
 
-* New indices no longer support the old-style of parent/child and should
-  use the <<parent-join,`join` field>> instead.
+* 新的索引不再支持 parent/child 的旧语法，而应该用 <<parent-join,`join` 字段>>替换。
 
-* The `_default_` mapping type is deprecated.
+* `_default_` 映射类型被弃用。
 
 Elasticsearch 7.x::
 
-* The `type` parameter in URLs are optional.  For instance, indexing
-  a document no longer requires a document `type`.  The new index APIs
-  are `PUT {index}/_doc/{id}` in case of explicit ids and `POST {index}/_doc`
-  for auto-generated ids.
+* `type` 参数在 URLs 中是可选的。例如索引一个文档不再需要该文档的 `type` 。新索引 APIs 在显示 id 的情况下是 `PUT {index}/_doc/{id}` ，而对于自动生成 ids 将是 `POST {index}/_doc` 。
 
-* The `GET|PUT _mapping` APIs support a query string parameter
-  (`include_type_name`) which indicates whether the body should include
-  a layer for the type name. It defaults to `true`. 7.x indices which
-  don't have an explicit type will use the dummy type name `_doc`.
+* `GET|PUT _mapping` APIs 支持一个查询参数（`include_type_name`），该参数指定 body 是否包含类型名称的层级。
+  默认值为 `true`。在 7.x 中，没有明确类型的索引会使用一个假的类型名称 `_doc` 。
 
-* The `_default_` mapping type is removed.
+* `_default_` 映射类型被移除。
 
 Elasticsearch 8.x::
 
-* The `type` parameter is no longer supported in URLs.
+* `type` 参数在 URLs 中不再被支持。
 
-* The `include_type_name` parameter defaults to `false`.
+* `include_type_name` 参数默认值为 `false`。
 
 Elasticsearch 9.x::
 
-* The `include_type_name` parameter is removed.
+* `include_type_name` 参数被移除。
 
 [float]
 === Migrating multi-type indices to single-type
