@@ -1,58 +1,54 @@
 [[mapping-types]]
 == Field datatypes
 
-Elasticsearch supports a number of different datatypes for the fields in a
-document:
+Elasticsearch 中文档的字段支持很多不同的数据类型：
 
 [float]
-=== Core datatypes
+=== 核心数据类型
 
-string::        <<text,`text`>> and <<keyword,`keyword`>>
-<<number>>::    `long`, `integer`, `short`, `byte`, `double`, `float`, `half_float`, `scaled_float`
-<<date>>::      `date`
-<<boolean>>::   `boolean`
-<<binary>>::    `binary`
-<<range>>::     `integer_range`, `float_range`, `long_range`, `double_range`, `date_range`
-
-[float]
-=== Complex datatypes
-
-<<array>>::     Array support does not require a dedicated `type`
-<<object>>::    `object` for single JSON objects
-<<nested>>::    `nested` for arrays of JSON objects
+字符串类型（string）::        <<text,`text`>> and <<keyword,`keyword`>>
+<<number,数字类型（number）>>::    `long`, `integer`, `short`, `byte`, `double`, `float`, `half_float`, `scaled_float`
+<<date,日期类型（date）>>::      `date`
+<<boolean,布尔类型（boolean）>>::   `boolean`
+<<binary,二进制类型（binary）>>::    `binary`
+<<range,范围类型（range）>>::     `integer_range`, `float_range`, `long_range`, `double_range`, `date_range`
 
 [float]
-=== Geo datatypes
+=== 复杂数据类型
 
-<<geo-point>>::     `geo_point` for lat/lon points
-<<geo-shape>>::     `geo_shape` for complex shapes like polygons
-
-[float]
-=== Specialised datatypes
-
-<<ip>>::            `ip` for IPv4 and IPv6 addresses
-<<search-suggesters-completion,Completion datatype>>::
-                    `completion` to provide auto-complete suggestions
-<<token-count>>::   `token_count` to count the number of tokens in a string
-{plugins}/mapper-murmur3.html[`mapper-murmur3`]:: `murmur3` to compute hashes of values at index-time and store them in the index
-
-<<percolator>>::    Accepts queries from the query-dsl
-
-<<parent-join>>::   Defines parent/child relation for documents within the same index
+<<array>>::     数组的支持不需要一个专门的 `type`
+<<object>>::    `object`, 描述简单的 JSON 对象
+<<nested>>::    `nested`, 描述 JSON 对象的数组
 
 [float]
-=== Multi-fields
+=== 地理数据类型
 
-It is often useful to index the same field in different ways for different
-purposes. For instance, a `string` field could be mapped as
-a `text` field for full-text search, and as a `keyword` field for
-sorting or aggregations.  Alternatively, you could index a text field with
-the <<analysis-standard-analyzer,`standard` analyzer>>, the
-<<english-analyzer,`english`>> analyzer, and the
-<<french-analyzer,`french` analyzer>>.
+<<geo-point>>::     `geo_point`, 描述经纬度坐标
+<<geo-shape>>::     `geo_shape`, 描述复杂图形，例如多边形
 
-This is the purpose of _multi-fields_.  Most datatypes support multi-fields
-via the <<multi-fields>> parameter.
+[float]
+=== 专业数据类型
+
+<<ip>>::            `ip` 描述 IPv4 或 IPv6 地址
+<<search-suggesters-completion,补全类型（completion）>>::
+                    `completion` 类型提供自动补全建议
+<<token-count,令牌计数（token-count）>>::   `token_count` 类型可统计字符串中的令牌数量
+{plugins}/mapper-murmur3.html[`mapper-murmur3`]:: `murmur3` 在索引时计算一些值的哈希值并将它们存储在索引中
+
+<<percolator,过滤器（percolator）>>::    接受来自 query-dsl 的查询
+
+<<parent-join>>::   为相同索引内的文档定义父/子关系
+
+[float]
+=== 多字段
+
+为了达到不同的目的，以不同的方式索引相同的字段通常是有用的。
+例如，字符串（string）字段可以被<<mapping-index,索引>>为用于全文搜索的文本（text）字段，
+并作为用于排序或聚合的关键字字段。
+或者，可以使用<<analysis-standard-analyzer,标准分析器>>，
+<<analysis-standard-analyzer,英文分析器>>和<<french-analyzer,法语分析器>>等对字符串（string）字段进行索引。
+
+这是多字段（multi-fields）的目的，而大多数数据类型可通过 <<multi-fields>> 参数支持多字段。
 
 include::types/array.asciidoc[]
 
