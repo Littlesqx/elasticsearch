@@ -1,19 +1,18 @@
 [[boolean]]
-=== Boolean datatype
+=== 布尔数据类型
 
-Boolean fields accept JSON `true` and `false` values, but can also accept
-strings which are interpreted as either true or false:
+布尔字段接受 JSON `true` 或 `false` 值，但也可以接受被解释为 `true` 或 `false` 的字符串：
 
 [horizontal]
-False values::
+False 值::
 
     `false`, `"false"`
 
-True values::
+True 值::
 
     `true`, `"true"`
 
-For example:
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -45,13 +44,12 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> Indexing a document with `"true"`, which is interpreted as `true`.
-<2> Searching for documents with a JSON `true`.
+<1> 以 `"with"` 索引一个文档，会被解释为 `true` 。
+<2> 以 JSON `true` 搜索文档。
 
-Aggregations like the <<search-aggregations-bucket-terms-aggregation,`terms`
-aggregation>>  use `1` and `0` for the `key`, and the strings `"true"` and
-`"false"` for the `key_as_string`. Boolean fields  when used in scripts,
-return `1` and `0`:
+聚合例如 <<search-aggregations-bucket-terms-aggregation,`terms`
+aggregation>> 使用 `1` 和 `0` 作为 `key`，而字符串 `"true"` 和 `"false"` 作为 `key_as_string` 。
+在脚本中使用布尔字段，返回 `1` 和 `0` ：
 
 [source,js]
 --------------------------------------------------
@@ -87,36 +85,29 @@ GET my_index/_search
 // CONSOLE
 
 [[boolean-params]]
-==== Parameters for `boolean` fields
+==== 布尔值的参数
 
-The following parameters are accepted by `boolean` fields:
+布尔字段接受以下参数：
 
 [horizontal]
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级别查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` （默认）或 `false` 。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<null-value,`null_value`>>::
 
-    Accepts any of the true or false values listed above. The value is
-    substituted for any explicit `null` values.  Defaults to `null`, which
-    means the field is treated as missing.
+    接受上面列出的任何真值或假值。该值被替换为任何显式空值。默认为 `null` ，意味着该字段被视为缺失。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
 
