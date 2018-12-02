@@ -1,16 +1,15 @@
 [[nested]]
-=== Nested datatype
+=== 嵌套数据类型
 
-The `nested` type is a specialised version of the <<object,`object`>> datatype
-that allows arrays of objects to be indexed in a way that they can be queried 
-independently of each other.
+嵌套类型（`nested` datatype）是 <<object,`object`>> 类型的一个特殊类型，
+它允许了数组和对象彼此之间独立地被索引和查询。
 
-==== How arrays of objects are flattened
+==== 数组和对象如何被展平
 
-Arrays of inner <<object,`object` fields>> do not work the way you may expect.
-Lucene has no concept of inner objects, so Elasticsearch flattens object
-hierarchies into a simple list of field names and values. For instance, the
-following document:
+内部 <<object,`object` 字段>>的数组不能按照你期望的方式工作。
+Lucene 没有内部对象的概念，因此 Elasticsearch 将对象层次结构展平为一个简单的字段名称和值的列表。
+
+例如下面的文档：
 
 [source,js]
 --------------------------------------------------
@@ -30,9 +29,9 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `user` field is dynamically added as a field of type `object`.
+<1> `user` 字段被以 `object` 类型字段动态地添加。
 
-would be transformed internally into a document that looks more like this:
+它会在内部被转换为像这样的文档：
 
 [source,js]
 --------------------------------------------------
@@ -44,9 +43,9 @@ would be transformed internally into a document that looks more like this:
 --------------------------------------------------
 // NOTCONSOLE
 
-The `user.first` and `user.last` fields are flattened into multi-value fields,
-and the association between `alice` and `white` is lost.  This document would
-incorrectly match a query for `alice AND smith`:
+`user.first` 和 `user.last` 字段被展平为多值字段，
+并且 `alice` 和 `white` 之间的联系丢失了。
+这个文档会错误地匹配 `alice AND smith` 的查询
 
 [source,js]
 --------------------------------------------------
@@ -65,13 +64,11 @@ GET my_index/_search
 // CONSOLE
 // TEST[continued]
 
-==== Using `nested` fields for arrays of objects
+==== 为对象数组使用 `nested` 字段
 
-If you need to index arrays of objects and to maintain the independence of
-each object in the array, you should use the `nested` datatype instead of the
-<<object,`object`>> datatype.  Internally, nested objects index each object in
-the array as a separate hidden document, meaning that each nested object can be
-queried independently of the others, with the <<query-dsl-nested-query,`nested` query>>:
+如果你需要索引对象数组和维护数组中每个对象的独立性，你需要使用 `nested` 类型，而不是 <<object,`object`>> 类型。
+在内部，嵌套对象将数组中的每个对象索引为一个单独的隐藏文档，这意味着每个嵌套对象都可以独立于其他对象，
+使用 <<query-dsl-nested-query,`nested` query>> 进行查询：
 
 [source,js]
 --------------------------------------------------
@@ -145,59 +142,47 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `user` field is mapped as type `nested` instead of type `object`.
-<2> This query doesn't match because `Alice` and `Smith` are not in the same nested object.
-<3> This query matches because `Alice` and `White` are in the same nested object.
-<4> `inner_hits` allow us to highlight the matching nested documents.
+<1> `user` 字段被以 `nested` 类型映射，而不是 `object` 类型。
+<2> 查询不会匹配，因为 `Alice` 和 `Smith` 不在相同的嵌套对象中。
+<3> 查询会匹配，因为 `Alice` 和 `White` 在相同的嵌套对象中。 
+<4> `inner_hits` 允许我们高亮匹配的嵌套文档。
 
+嵌套文档可以被：
 
-Nested documents can be:
-
-* queried with the <<query-dsl-nested-query,`nested`>> query.
-* analyzed with the <<search-aggregations-bucket-nested-aggregation,`nested`>>
-  and <<search-aggregations-bucket-reverse-nested-aggregation, `reverse_nested`>>
-  aggregations.
-* sorted with <<nested-sorting,nested sorting>>.
-* retrieved and highlighted with <<nested-inner-hits,nested inner hits>>.
+* 使用 <<query-dsl-nested-query,`nested`>> 查询。
+* 使用 <<search-aggregations-bucket-nested-aggregation,`nested`>> 分析和 <<search-aggregations-bucket-reverse-nested-aggregation, `reverse_nested`>> 聚合。
+* 使用 <<nested-sorting,nested sorting>> 排序。
+* 使用 <<nested-inner-hits,nested inner hits>> 复取和高亮。
 
 
 [[nested-params]]
-==== Parameters for `nested` fields
+==== `nested` 字段的参数
 
-The following parameters are accepted by `nested` fields:
+`nested` 字段接受下面的参数：
 
 [horizontal]
 <<dynamic,`dynamic`>>::
 
-    Whether or not new `properties` should be added dynamically to an existing
-    nested object.  Accepts `true` (default), `false` and `strict`.
+    新 `properties` 是否应该被动态添加到已存在的嵌套对象中。接受 `true` （默认），`false` 和 `strict` 。
 
 <<properties,`properties`>>::
 
-    The fields within the nested object, which can be of any
-    <<mapping-types,datatype>>, including `nested`. New properties
-    may be added to an existing nested object.
+    嵌套对象内部的字段，可以是 任意的 <<mapping-types,数据类型>>，包括 `nested` 。
+    新 `properties` 可以被添加到已存在的嵌套对象。
 
 
 [IMPORTANT]
 =============================================
 
-Because nested documents are indexed as separate documents, they can only be
-accessed  within the scope of the `nested` query, the
-`nested`/`reverse_nested` aggregations, or <<nested-inner-hits,nested inner hits>>.
+嵌套文档因为是以单独文档被索引，
+所以仅仅可以在嵌套查询（`nested`/`reverse_nested`, 或 <<nested-inner-hits,nested inner hits>>）内被接受。
 
-For instance, if a string field within a nested document has
-<<index-options,`index_options`>> set to `offsets` to allow use of the postings
-during the highlighting, these offsets will not be available during the main highlighting
-phase.  Instead, highlighting needs to be performed via
-<<nested-inner-hits,nested inner hits>>.
-
+例如，如果嵌套文档中的字符串字段的 <<index-options,`index_options`>> 设置为 `offsets` 以允许在高亮阶段 postings 的使用，
+在主要的高亮阶段，这些 `offsets` 不可用。相反，高亮需要通过 <<nested-inner-hits,nested inner hits>> 进行。
 =============================================
 
 
-==== Limiting the number of `nested` fields
+==== 限制 `nested` 字段的数量
 
-Indexing a document with 100 nested fields actually indexes 101 documents as each nested
-document is indexed as a separate document. To safeguard against ill-defined mappings
-the number of nested fields that can be defined per index has been limited to 50. See
-<<mapping-limit-settings>>.
+索引一个包含 100 个 nested 字段的文档实际上是索引 101 个文档，因为每个嵌套文档都作为一个独立文档来索引。
+为了防止过度定义嵌套字段的数量，每个索引可以定义的嵌套字段被限制在 50 个。参考 <<mapping-limit-settings>> 。
