@@ -1,8 +1,7 @@
 [[object]]
-=== Object datatype
+=== 对象数据类型
 
-JSON documents are hierarchical in nature: the document may contain inner
-objects which, in turn, may contain inner objects themselves:
+JSON 文档本质上是分层的：文档可能包含内部对象，而内部对象本身可能包含内部对象：
 
 [source,js]
 --------------------------------------------------
@@ -19,12 +18,11 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The outer document is also a JSON object.
-<2> It contains an inner object called `manager`.
-<3> Which in turn contains an inner object called `name`.
+<1> 外部文档也是一个 JSON 对象。
+<2> 它包含了一个叫 `manager` 的内部对象。
+<3> 又包含了一个叫 `name` 的内部对象。
 
-Internally, this document is indexed as a simple, flat list of key-value
-pairs, something like this:
+在内部，这个文档被索引为一个简单的，平铺的键值对列表：
 
 [source,js]
 --------------------------------------------------
@@ -37,7 +35,7 @@ pairs, something like this:
 --------------------------------------------------
 // NOTCONSOLE
 
-An explicit mapping for the above document could look like this:
+上述文档的显式映射可能如下所示：
 
 [source,js]
 --------------------------------------------------
@@ -66,34 +64,30 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> The mapping type is a type of object, and has a `properties` field.
-<2> The `manager` field is an inner `object` field.
-<3> The `manager.name` field is an inner `object` field within the `manager` field.
+<1> 映射类型是一种对象，拥有 `properties` 字段。
+<2> `manager` 字段是一个内部对象字段。
+<3> `manager.name` 字段是 `manager` 内的一个内部对象字段。
 
-You are not required to set the field `type` to `object` explicitly, as this is the default value.
+你不需要显式地设置 `type` 字段为 `object` ，因为这是默认值。
 
 [[object-params]]
-==== Parameters for `object` fields
+==== `object` 字段的参数
 
-The following parameters are accepted by `object` fields:
+`object` 字段接受下面的参数：
 
 [horizontal]
 <<dynamic,`dynamic`>>::
 
-    Whether or not new `properties` should be added dynamically
-    to an existing object.  Accepts `true` (default), `false`
-    and `strict`.
+    新 `properties` 是否应该被动态添加到已存在的嵌套对象中。接受 `true` （默认）， `false` 和 `strict` 。
+
 
 <<enabled,`enabled`>>::
 
-    Whether the JSON value given for the object field should be
-    parsed and indexed (`true`, default) or completely ignored (`false`).
+    为对象字段指定的 JSON 值是否应该被解析和索引（默认 `true` ）或完全忽略（ `false` ）。
 
 <<properties,`properties`>>::
 
-    The fields within the object, which can be of any
-    <<mapping-types,datatype>>, including `object`. New properties
-    may be added to an existing object.
+    嵌套对象内部的字段，可以是 任意的 <<mapping-types,数据类型>>，包括 `nested` 。
+    新 `properties` 可以被添加到已存在的嵌套对象。
 
-IMPORTANT: If you need to index arrays of objects instead of single objects,
-read <<nested>> first.
+IMPORTANT: 如果你需要索引对象数组而不是单个对象，请先阅读 <<nested>> 。
