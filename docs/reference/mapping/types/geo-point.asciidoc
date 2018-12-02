@@ -1,17 +1,16 @@
 [[geo-point]]
-=== Geo-point datatype
+=== 地理位置类型
 
-Fields of type `geo_point` accept latitude-longitude pairs, which can be used:
+地理位置（ `geo_point` ）类型接受经纬度对，可以被用作：
 
-* to find geo-points within a <<query-dsl-geo-bounding-box-query,bounding box>>,
-  within a certain <<query-dsl-geo-distance-query,distance>> of a central point,
-  or within a <<query-dsl-geo-polygon-query,polygon>>.
-* to aggregate documents <<search-aggregations-bucket-geohashgrid-aggregation,geographically>>
-  or by <<search-aggregations-bucket-geodistance-aggregation,distance>> from a central point.
-* to integrate distance into a document's <<query-dsl-function-score-query,relevance score>>.
-* to <<geo-sorting,sort>> documents by distance.
+* 找到在<<query-dsl-geo-bounding-box-query,边界框>>内，
+  离一个中心点的确切 <<query-dsl-geo-distance-query,距离>>，
+  或一个<<query-dsl-geo-polygon-query,多边形>>中的地理位置点。
+* 通过<<search-aggregations-bucket-geohashgrid-aggregation,地理位置>>或离中心点的<<search-aggregations-bucket-geodistance-aggregation,距离>>聚合文档。
+* 将距离整合为文档的<<query-dsl-function-score-query,相关度分数>>。
+* 通过距离<<geo-sorting,排序>>文档。
 
-There are four ways that a geo-point may be specified, as demonstrated below:
+有如下的四种方法指定地理位置：
 
 [source,js]
 --------------------------------------------------
@@ -74,64 +73,55 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> Geo-point expressed as an object, with `lat` and `lon` keys.
-<2> Geo-point expressed as a string with the format: `"lat,lon"`.
-<3> Geo-point expressed as a geohash.
-<4> Geo-point expressed as an array with the format: [ `lon`, `lat`]
-<5> A geo-bounding box query which finds all geo-points that fall inside the box.
+<1> Geo-point 可以用具有 `lat` 和 `lon` 属性的对象表示。
+<2> Geo-point 可以用以 `"lat,lon"` 作为格式的字符串表示。
+<3> Geo-point 可以用 geohash 表示。
+<4> Geo-point 可以用以 [ `lon`, `lat`] 为格式的数组表示。
+<5> 查询边界框（query.geo_bounding_box）可以找出边界框里的所有地理位置。
 
 [IMPORTANT]
-.Geo-points expressed as an array or string
+.Geo-points 表示为字符串或数组
 ==================================================
 
-Please note that string geo-points are ordered as `lat,lon`, while array
-geo-points are ordered as the reverse: `lon,lat`.
+请注意字符串的表示方式被定义为 `lat,lon` ，而数组的表示方式是相反的，即 `lon,lat` 。
 
-Originally, `lat,lon` was used for both array and string, but the array
-format was changed early on to conform to the format used by GeoJSON.
+本来字符和数组形式都是使用 `lat,lon` ，但是数组形式早些版本被改变了，以符合 GeoJSON 使用的格式。
 
 ==================================================
 
 [NOTE]
-A point can be expressed as a http://en.wikipedia.org/wiki/Geohash[geohash].
-Geohashes are https://en.wikipedia.org/wiki/Base32[base32] encoded strings of
-the bits of the latitude and longitude interleaved. Each character in a geohash
-adds additional 5 bits to the precision. So the longer the hash, the more
-precise it is. For the indexing purposed geohashs are translated into
-latitude-longitude pairs. During this process only first 12 characters are
-used, so specifying more than 12 characters in a geohash doesn't increase the
-precision. The 12 characters provide 60 bits, which should reduce a possible
-error to less than 2cm.
+
+一个点可以表示为 http://en.wikipedia.org/wiki/Geohash[geohash]。
+Geohashes 是 https://en.wikipedia.org/wiki/Base32[base32] 编码的纬度和经度位交错的字符串。
+geohash 中的每个字符都会为精度添加额外的 5 位。
+因此哈希越长，它就越精确。为了索引目的，地理相位被转换为纬度-经度对。
+在此过程中，仅使用前 12 个字符，因此在 geohash 中指定超过 12 个字符不会增加精度。
+12 个字符提供 60 位，这应该将可能的错误减少到小于 2cm。
 
 [[geo-point-params]]
-==== Parameters for `geo_point` fields
+==== `geo_point` 字段的参数
 
-The following parameters are accepted by `geo_point` fields:
+`geo_point` 字段接受以下参数：
 
 [horizontal]
 
 <<ignore-malformed,`ignore_malformed`>>::
 
-    If `true`, malformed geo-points are ignored. If `false` (default),
-    malformed geo-points throw an exception and reject the whole document.
+    如果为 `true` ，格式错误的 geo-points 会被忽略。如果为 `false` （默认），
+    格式错误的 geo_points 会抛出异常，并拒绝整个文档。
 
 `ignore_z_value`::
 
-    If `true` (default) three dimension points will be accepted (stored in source)
-    but only latitude and longitude values will be indexed; the third dimension is
-    ignored. If `false`, geo-points containing any more than latitude and longitude
-    (two dimensions) values throw an exception and reject the whole document.
+    如果为 `true` （默认），将接受三个维度点（存储在源中），但只会索引纬度和经度值；第三个维度会被忽略。
+    如果为 `false` ，则包含任何超过纬度和经度（二维）值的地理点（geo-points）会抛出异常并拒绝整个文档。
 
 <<null-value,`null_value`>>::
 
-    Accepts an geopoint value which is substituted for any explicit `null` values.
-    Defaults to `null`, which means the field is treated as missing.
+    接受一个 geopoint 值替换显式 `null` 值。默认是 `null` ，意味着该字段被视为缺失。
 
-==== Using geo-points in scripts
+==== 在脚本中使用 geo-points
 
-When accessing the value of a geo-point in a script, the value is returned as
-a `GeoPoint` object, which allows access to the `.lat` and `.lon` values
-respectively:
+在脚本中，当访问的 geo-point 的值时，将返回一个 `GeoPoint` 对象，它允许分别访问 `.lat` 和 `.lon` ：
 
 [source,painless]
 --------------------------------------------------
@@ -140,7 +130,7 @@ def lat      = geopoint.lat;
 def lon      = geopoint.lon;
 --------------------------------------------------
 
-For performance reasons, it is better to access the lat/lon values directly:
+由于性能的原因，最好直接访问 lat/lon：
 
 [source,painless]
 --------------------------------------------------
