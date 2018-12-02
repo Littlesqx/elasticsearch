@@ -1,19 +1,19 @@
 [[number]]
-=== Numeric datatypes
+=== 数字数据类型
 
-The following numeric types are supported:
+支持以下数字类型：
 
 [horizontal]
-`long`::         A signed 64-bit integer with a minimum value of +-2^63^+ and a maximum value of +2^63^-1+.
-`integer`::      A signed 32-bit integer with a minimum value of +-2^31^+ and a maximum value of +2^31^-1+.
-`short`::        A signed 16-bit integer with a minimum value of +-32,768+ and a maximum value of +32,767+.
-`byte`::         A signed 8-bit integer with a minimum value of +-128+ and a maximum value of +127+.
-`double`::       A double-precision 64-bit IEEE 754 floating point number, restricted to finite values.
-`float`::        A single-precision 32-bit IEEE 754 floating point number, restricted to finite values.
-`half_float`::   A half-precision 16-bit IEEE 754 floating point number, restricted to finite values.
-`scaled_float`:: A finite floating point number that is backed by a `long`, scaled by a fixed `double` scaling factor.
+`long`::         有符号 64 位整型，最小值是 +-2^63^+ ，最大值是 +2^63^-1+ 。
+`integer`::      有符号 32 位整型，最小值是 +-2^31^+ ，最大值是 +2^31^-1+ 。
+`short`::        有符号 16 位整型，最小值是 +-32,768+ ，最大值是 +32,767+ 。
+`byte`::         有符号 8 位整型，最小值是 +-128+ ，最大值是 +127+ 。
+`double`::       双精度 64 位 IEEE 754 浮点数。
+`float`::        单精度 32 位 IEEE 754 浮点数。
+`half_float`::   半精度 16 位 IEEE 754 浮点数。
+`scaled_float`:: 由 `long` 支持的一个浮点数，由固定的 `double` 缩放因子缩放。
 
-Below is an example of configuring a mapping with numeric fields:
+以下是使用数字字段配置映射的一个例子：
 
 [source,js]
 --------------------------------------------------
@@ -39,104 +39,78 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-NOTE: The `double`, `float` and `half_float` types consider that `-0.0` and
-`+0.0` are different values. As a consequence, doing a `term` query on
-`-0.0` will not match `+0.0` and vice-versa. Same is true for range queries:
-if the upper bound is `-0.0` then `+0.0` will not match, and if the lower
-bound is `+0.0` then `-0.0` will not match.
+NOTE: `double` ，`float` 和 `half_float` 类型会认为 `-0.0` 和 `-0.0` 是不同的值。
+结果，一个对于 `-0.00` 的术语查询，不会匹配到 `+0.00` ，反之亦然。范围查询也是如此：
+如果上限为 `-0.0` ，则 `+0.0` 将不匹配，如果下限为 `+0.0` ，则 `-0.0` 将不匹配。
 
-==== Which type should I use?
+==== 我应该使用哪种类型？
 
-As far as integer types (`byte`, `short`, `integer` and `long`) are concerned,
-you should pick the smallest type which is enough for your use-case. This will
-help indexing and searching be more efficient. Note however that storage is
-optimized based on the actual values that are stored, so picking one type over
-another one will have no impact on storage requirements.
+就整数类型（`byte` ，`short` ，`integer` 和 `long`）而言，你应该选择足够用于你的用例的最小类型。
+这将有助于索引和搜索更有效。但请注意，存储是根据存储的实际值进行优化的，因此选择一种类型而不是另一种类型将不会影响存储要求。
 
-For floating-point types, it is often more efficient to store floating-point
-data into an integer using a scaling factor, which is what the `scaled_float`
-type does under the hood. For instance, a `price` field could be stored in a
-`scaled_float` with a `scaling_factor` of +100+. All APIs would work as if
-the field was stored as a double, but under the hood Elasticsearch would be
-working with the number of cents, +price*100+, which is an integer. This is
-mostly helpful to save disk space since integers are way easier to compress
-than floating points. `scaled_float` is also fine to use in order to trade
-accuracy for disk space. For instance imagine that you are tracking cpu
-utilization as a number between +0+ and +1+. It usually does not matter much
-whether cpu utilization is +12.7%+ or +13%+, so you could use a `scaled_float`
-with a `scaling_factor` of +100+ in order to round cpu utilization to the
-closest percent in order to save space.
+对于浮点类型，使用缩放因子将浮点数据存储到整数中通常更有效，这就是 `scaled_float` 类型在引擎盖下的作用。
+例如，`price` 字段可以存储在 `scaled_float` 中，其 `scaling_factor` 为 +100+ 。
+所有的 API 都可以像将字段存储为 double 一样工作，但在引擎盖下 Elasticsearch 将使用分数， +price*100+ （一个整数）。
+这对于节省磁盘空间大多有用，因为整数比浮点更容易压缩。`scaled_float` 也可以用来交换磁盘空间的准确性。
+例如，假设你将 CPU 利用率跟踪为 +0+ 和 +1+ 之间的数字。CPU 利用率是 +12.7%+ 还是 +13%+ 通常无关紧要，所以你可以使用带有 +100+ 的 `scaling_factor` 的 `scaled_float` 来将
+CPU 利用率转化为最接近的百分比，以节省空间。
 
-If `scaled_float` is not a good fit, then you should pick the smallest type
-that is enough for the use-case among the floating-point types: `double`,
-`float` and `half_float`. Here is a table that compares these types in order
-to help make a decision.
+如果 `scaled_float` 不合适，那么你应该在浮点类型中选择足够用于用例的最小类型：
+`double` ，`float` 和 `half_float` 。这是一个比较这些类型的表，以帮助做出决定。
 
 [cols="<,<,<,<",options="header",]
 |=======================================================================
-|Type |Minimum value |Maximum value |Significant bits / digits
+|类型 |最小值 |最大值 |有效位/数
 |`double`|+2^-1074^+ |+(2-2^-52^)·2^1023^+ |+53+ / +15.95+
 |`float`|+2^-149^+ |+(2-2^-23^)·2^127^+ |+24+ / +7.22+
 |`half_float`|+2^-24^+ |+65504+ |+11+ / +3.31+
 |=======================================================================
 
 [[number-params]]
-==== Parameters for numeric fields
+==== numeric 字段的参数
 
-The following parameters are accepted by numeric types:
+numeric 类型接受以下参数：
 
 [horizontal]
 
 <<coerce,`coerce`>>::
 
-    Try to convert strings to numbers and truncate fractions for integers.
-    Accepts `true` (default) and `false`.
+    尝试将字符串转换为数字并截断整数的分数。接受 `true` （默认），和 `false` 。
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` （默认） 或 `false` 。
 
 <<ignore-malformed,`ignore_malformed`>>::
 
-    If `true`, malformed numbers are ignored. If `false` (default), malformed
-    numbers throw an exception and reject the whole document.
+    如果 `true` ，格式错误的数字会被忽略。如果 `false` （默认），错误格式的数字会抛出异常，并拒绝整个文档。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<null-value,`null_value`>>::
 
-    Accepts a numeric value of the same `type` as the field which is
-    substituted for any explicit `null` values.  Defaults to `null`, which
-    means the field is treated as missing.
+    接受一个与该字段相同类型的数值替换显式 `null` 值。默认是 `null` ，意味着该字段被视为缺失。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
 
 [[scaled-float-params]]
-==== Parameters for `scaled_float`
+==== `scaled_float` 的参数
 
-`scaled_float` accepts an additional parameter:
+`scaled_float` 接受额外的参数：
 
 [horizontal]
 
 `scaling_factor`::
 
-    The scaling factor to use when encoding values. Values will be multiplied
-    by this factor at index time and rounded to the closest long value. For
-    instance, a `scaled_float` with a `scaling_factor` of +10+ would internally
-    store +2.34+ as +23+ and all search-time operations (queries, aggregations,
-    sorting) will behave as if the document had a value of +2.3+. High values
-    of `scaling_factor` improve accuracy but also increase space requirements.
-    This parameter is required.
+    编码值时使用的缩放因子。值将在索引时间乘以此因子并四舍五入到最接近的长值。例如，
+    带有 `scaling_factor` 为 +10+ 的 `scaled_float` 将在内部存储 +2.34+ 为 +23+ ，
+    并且所有搜索时操作的行为（查询、聚合和排序）就像文档的值为 +2.3+ 一样。
+    `scaling_factor` 的高值提高了准确性，但也增加了空间要求。此参数是必需的。
