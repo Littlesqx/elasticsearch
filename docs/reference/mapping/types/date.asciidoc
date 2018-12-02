@@ -1,32 +1,27 @@
 [[date]]
-=== Date datatype
+=== 日期数据类型
 
-JSON doesn't have a date datatype, so dates in Elasticsearch can either be:
+JSON 没有日期（date）数据类型, 所以 elasticsearch 中的 date 可以是以下形式：
 
-* strings containing formatted dates, e.g. `"2015-01-01"` or `"2015/01/01 12:10:30"`.
-* a long number representing _milliseconds-since-the-epoch_.
-* an integer representing _seconds-since-the-epoch_.
+* 包含格式化日期的字符串， 例如 `"2015-01-01"` 或 `"2015/01/01 12:10:30"` 。
+* 代表 _milliseconds-since-the-epoch_ 的长整型数。
+* 代表 _seconds-since-the-epoch_ 的整型数。
 
-Internally, dates are converted to UTC (if the time-zone is specified) and
-stored as a long number representing milliseconds-since-the-epoch.
+在内部，日期将转换为 UTC（如果指定了时区），并将其存储为表示 milliseconds-since-the-epoch 的长整型数。
 
-Queries on dates are internally converted to range queries on this long
-representation, and the result of aggregations and stored fields is converted
-back to a string depending on the date format that is associated with the field.
+日期查询在内部转换为此长整形（long）表示的范围查询，而聚合和存储字段的结果将转换回字符串，具体取决于与字段关联的日期格式。
 
-NOTE: Dates will always be rendered as strings, even if they were initially
-supplied as a long in the JSON document.
+NOTE: 日期将始终呈现为字符串，即使它们最初在 JSON 文档中作为长整形（long）提供。
 
-Date formats can be customised, but if no `format` is specified then it uses
-the default:
+日期格式可以自定义，但如果没有指定格式（ `format` ），则使用默认格式：
 
     "strict_date_optional_time||epoch_millis"
 
-This means that it will accept dates with optional timestamps, which conform
-to the formats supported by <<strict-date-time,`strict_date_optional_time`>>
-or milliseconds-since-the-epoch.
+这意味着它将接受带有可选时间戳的日期，
+这些日期符合 <<strict-date-time,`strict_date_optional_time`>> 或者 milliseconds-since-the-epoch 所支持的格式。
 
-For instance:
+
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -58,19 +53,17 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `date` field uses the default `format`.
-<2> This document uses a plain date.
-<3> This document includes a time.
-<4> This document uses milliseconds-since-the-epoch.
-<5> Note that the `sort` values that are returned are all in milliseconds-since-the-epoch.
+<1> `date` 字段使用默认格式。
+<2> 这个文档使用了纯文本日期。
+<3> 这个文档包含了一个时间。
+<4> 这个文档使用了 milliseconds-since-the-epoch 格式。
+<5> 注意，返回的排序值全部是 milliseconds-since-the-epoch 格式。
 
 [[multiple-date-formats]]
-==== Multiple date formats
+==== 多日期格式
 
-Multiple formats can be specified by separating them with `||` as a separator.
-Each format will be tried in turn until a matching format is found.  The first
-format will be used to convert the _milliseconds-since-the-epoch_ value back
-into a string.
+可以使用 `||` 作为分隔符分隔多个格式。将依次尝试每种格式，直到找到匹配的格式。
+第一个格式将用于将从 _milliseconds-since-the-epoch_  格式的值转换为字符串。
 
 [source,js]
 --------------------------------------------------
@@ -91,51 +84,42 @@ PUT my_index
 // CONSOLE
 
 [[date-params]]
-==== Parameters for `date` fields
+==== 日期字段的参数
 
-The following parameters are accepted by `date` fields:
+日期字段接受一下参数：
 
 [horizontal]
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级别查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` （默认）或 `false` 。
 
 <<mapping-date-format,`format`>>::
 
-    The date format(s) that can be parsed.  Defaults to
-    `strict_date_optional_time||epoch_millis`.
+    可解析的日期格式。默认为 `strict_date_optional_time||epoch_millis` 。
 
 `locale`::
 
-    The locale to use when parsing dates since months do not have the same names
-    and/or abbreviations in all languages. The default is the
-    https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#ROOT[`ROOT` locale],
+    用于当月份在所有语言中没有一致的名字和（或）缩写时的日期解析上。
+    默认为 https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#ROOT[`ROOT` locale] 。
 
 <<ignore-malformed,`ignore_malformed`>>::
 
-    If `true`, malformed numbers are ignored. If `false` (default), malformed
-    numbers throw an exception and reject the whole document.
+    如果为真，则格式错误的数字将被忽略。如果为 `false` （默认），格式错误的数字会抛出异常并拒绝整个文档。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<null-value,`null_value`>>::
 
-    Accepts a date value in one of the configured +format+'s as the field
-    which is substituted for any explicit `null` values.  Defaults to `null`,
-    which means the field is treated as missing.
+    接受其中一个配置 +format+ 的日期值，当字段为显式 `null` 值时会被替换。
+    默认是 `null` ，意味着该字段被视为缺失。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
