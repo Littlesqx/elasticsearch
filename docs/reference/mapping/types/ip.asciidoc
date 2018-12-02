@@ -1,8 +1,8 @@
 [[ip]]
-=== IP datatype
+=== IP 数据类型
 
-An `ip` field can index/store either https://en.wikipedia.org/wiki/IPv4[IPv4] or
-https://en.wikipedia.org/wiki/IPv6[IPv6] addresses.
+`ip` 字段可以索引或存储为 https://en.wikipedia.org/wiki/IPv4[IPv4] 或
+https://en.wikipedia.org/wiki/IPv6[IPv6] 地址。
 
 [source,js]
 --------------------------------------------------
@@ -36,46 +36,41 @@ GET my_index/_search
 // CONSOLE
 // TESTSETUP
 
-NOTE: You can also store ip ranges in a single field using an <<range,ip_range datatype>>.
+NOTE: 你也可以使用 <<range,ip_range 数据类型>>在一个字段中存储 ip 范围。
 
 [[ip-params]]
-==== Parameters for `ip` fields
+==== `ip` 字段的参数
 
-The following parameters are accepted by `ip` fields:
+`ip` 字段接受以下参数：
 
 [horizontal]
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级别查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` （默认）或 `false` 。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<null-value,`null_value`>>::
 
-    Accepts an IPv4 value which is substituted for any explicit `null` values.
-    Defaults to `null`, which means the field is treated as missing.
+    接受上面列出的任何 IPv4 值。该值被替换为任何显式空值。默认为 `null` ，意味着该字段被视为缺失。
+    
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
 
-==== Querying `ip` fields
+==== 查询 `ip` 字段
 
-The most common way to query ip addresses is to use the
-https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation[CIDR]
-notation: `[ip_address]/[prefix_length]`. For instance:
+查询 ip 地址的最常见方法是使用 
+https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation[CIDR] 符号： `[ip_address]/[prefix_length]` 。
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -105,10 +100,8 @@ GET my_index/_search
 --------------------------------------------------
 // CONSOLE
 
-Also beware that colons are special characters to the
-<<query-dsl-query-string-query,`query_string`>> query, so ipv6 addresses will
-need to be escaped. The easiest way to do so is to put quotes around the
-searched value:
+注意冒号是 <<query-dsl-query-string-query,`query_string`>> 查询的特殊字符，
+所以 ipv6 地址需要被转义。最简单的方法是给搜索值加上引号：
 
 [source,js]
 --------------------------------------------------
