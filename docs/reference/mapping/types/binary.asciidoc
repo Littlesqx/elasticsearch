@@ -1,9 +1,7 @@
 [[binary]]
-=== Binary datatype
+=== 二进制数据类型
 
-The `binary` type accepts a binary value as a
-https://en.wikipedia.org/wiki/Base64[Base64] encoded string. The field is not
-stored by default and is not searchable:
+二进制类型（binary datatype）接受二进制值作为 https://en.wikipedia.org/wiki/Base64[Base64] 编码字符串。该字段默认情况下不存储，不可搜索：
 
 [source,js]
 --------------------------------------------------
@@ -30,23 +28,17 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The Base64 encoded binary value must not have embedded newlines `\n`.
+<1> Base64 编码的二进制值必须不能嵌有换行符 `\n` 。
 
 [[binary-params]]
-==== Parameters for `binary` fields
+==== 二进制字段的参数
 
-The following parameters are accepted by `binary` fields:
+二进制字段接受一下参数：
 
 [horizontal]
 
 <<doc-values,`doc_values`>>::
-
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    or `false` (default).
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` 或 `false` （默认）。
 
 <<mapping-store,`store`>>::
-
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
