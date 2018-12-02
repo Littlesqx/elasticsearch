@@ -1,17 +1,13 @@
 [[keyword]]
-=== Keyword datatype
+=== 关键字数据类型
 
-A field to index structured content such as email addresses, hostnames, status
-codes, zip codes or tags.
+关键字字段（Keyword field）是用于索引结构内容的字段，例如邮箱地址、主机名、状态码、邮编编码和标签。
 
-They are typically used for filtering (_Find me all blog posts where
-++status++ is ++published++_), for sorting, and for aggregations. Keyword
-fields are only searchable by their exact value.
+它们通常用于过滤（ __查找所有 ++status++ 为 ++published++ 的博客文章__ ），搜索和聚合。关键字字段只能根据其确切的值进行搜索。
 
-If you need to index full text content such as email bodies or product
-descriptions, it is likely that you should rather use a <<text,`text`>> field.
+你如果需要索引全文内容，例如邮箱内容或产品描述，那可能更应该使用 <<text,`text`>> 字段。
 
-Below is an example of a mapping for a keyword field:
+下面是关键字字段的一个映射例子：
 
 [source,js]
 --------------------------------
@@ -31,86 +27,67 @@ PUT my_index
 // CONSOLE
 
 [[keyword-params]]
-==== Parameters for keyword fields
+==== 关键字字段的参数
 
-The following parameters are accepted by `keyword` fields:
+关键字字段接受下面的参数：
 
 [horizontal]
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级别查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` （默认）或 `false` 。
 
 <<eager-global-ordinals,`eager_global_ordinals`>>::
 
-    Should global ordinals be loaded eagerly on refresh? Accepts `true` or `false`
-    (default). Enabling this is a good idea on fields that are frequently used for
-    terms aggregations.
+    全局序数词是否被重启时预加载？接受 `true` 或 `false` （默认）。
+    对于经常使用术语字段聚合的字段，启用它是一个好主意。
 
 <<multi-fields,`fields`>>::
 
-    Multi-fields allow the same string value to be indexed in multiple ways for
-    different purposes, such as one field for search and a multi-field for
-    sorting and aggregations.
-
+    多字段允许为不同目的以多种方式索引相同的字符串值，例如用于搜索的一个字段和用于排序和聚合的多字段。
+    
 <<ignore-above,`ignore_above`>>::
 
-    Do not index any string longer than this value.  Defaults to `2147483647`
-    so that all values would be accepted. Please however note that default
-    dynamic mapping rules create a sub `keyword` field that overrides this
-    default by setting `ignore_above: 256`.
+    不要索引比该值更长的字符串。默认值 `2147483647` ，以便所有值都被接受。
+    但请注意，默认动态映射规则创建一个子 `keyword` 字段，通过设置 `ignore_above：256` 来覆盖此默认值。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) or `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<index-options,`index_options`>>::
 
-    What information should be stored in the index, for scoring purposes.
-    Defaults to `docs` but can also be set to `freqs` to take term frequency into account
-    when computing scores.
+    出于评分目的，应将哪些信息存储在索引中。 默认为 `docs` ，但也可以设置为 `freqs` ，以便在计算分数时考虑术语频率。
 
 <<norms,`norms`>>::
 
-    Whether field-length should be taken into account when scoring queries.
-    Accepts `true` or `false` (default).
+    在对查询进行评分时是否应考虑字段长度。
+    接受 `true` 或 `false` （默认）。
 
 <<null-value,`null_value`>>::
 
-    Accepts a string value which is substituted for any explicit `null`
-    values.  Defaults to `null`, which means the field is treated as missing.
+    接受一个替换显式 `null` 值的字符串值。默认是 `null` ，意味着该字段被视为缺失。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
 
 <<similarity,`similarity`>>::
 
-    Which scoring algorithm or _similarity_ should be used. Defaults
-    to `BM25`.
+    哪一个排序算法或 _similarity_ 被使用。默认是 `BM25` 。
 
 <<normalizer,`normalizer`>>::
 
-    How to pre-process the keyword prior to indexing. Defaults to `null`,
-    meaning the keyword is kept as-is.
+    如何在索引之前预处理关键字。默认是 `null` ，意味着关键字维持原样。
 
 `split_queries_on_whitespace`::
 
-    Whether <<full-text-queries,full text queries>> should split the input on whitespace
-    when building a query for this field.
-    Accepts `true` or `false` (default).
+    在构建此字段的查询时，<<full-text-queries,全文查询>>是否应拆分在空白上的输入。接受 `true` 或 `false` （默认）。
 
-NOTE: Indexes imported from 2.x do not support `keyword`. Instead they will
-attempt to downgrade `keyword` into `string`. This allows you to merge modern
-mappings with legacy mappings. Long lived indexes will have to be recreated
-before upgrading to 6.x but mapping downgrade gives you the opportunity to do
-the recreation on your own schedule.
+NOTE: 从 2.x 导入的索引不支持 `keyword` 。相反，它们会尝试将 `keyword` 降级为 `string` ，
+这允许你将新映射和历史映射合并。升级到 6.x 之前，常驻索引（Long lived indexes）必须重建，
+但映射降级提供了按照自己的计划重建的机会。
