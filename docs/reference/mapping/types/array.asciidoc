@@ -1,41 +1,34 @@
 [[array]]
-=== Array datatype
+=== 数组数据类型
 
-In Elasticsearch, there is no dedicated `array` type.  Any field can contain
-zero or more values by default, however, all values in the array must be of
-the same datatype. For instance:
+在 Elasticsearch，没有专门的数组类型。任何字段默认都可以包含零个或更多个值，
+但是，一个数据中的所有值必须是相同的数据类型。例如：
 
-* an array of strings: [ `"one"`, `"two"` ]
-* an array of integers: [ `1`, `2` ]
-* an array of arrays: [ `1`, [ `2`, `3` ]] which is the equivalent of [ `1`, `2`, `3` ]
-* an array of objects: [ `{ "name": "Mary", "age": 12 }`, `{ "name": "John", "age": 10 }`]
+* 字符串数组： [ `"one"`, `"two"` ]
+* 整型数组： [ `1`, `2` ]
+* 数组的数组： [ `1`, [ `2`, `3` ]] ，也相当于 [ `1`, `2`, `3` ]
+* 对象数组： [ `{ "name": "Mary", "age": 12 }`, `{ "name": "John", "age": 10 }`]
 
-.Arrays of objects
+.对象数组
 [NOTE]
 ====================================================
 
-Arrays of objects do not work as you would expect: you cannot query each
-object independently of the other objects in the array.  If you need to be
-able to do this then you should use the <<nested,`nested`>> datatype instead
-of the <<object,`object`>> datatype.
+对象数组并不会如你期望地工作：你不能独立于数组中的其他对象查询每个对象。你如果需要做到，
+那应该使用 <<nested,`nested`>> 数据类型而不是 <<object,`object`>> 数据类型。
 
-This is explained in more detail in <<nested>>.
+<<nested>> 中阐述了更多细节。
 ====================================================
 
+动态添加字段时，数组中的第一个值确定字段 `type` 。
+所有后续值必须具有相同的数据类型或必须具有相同的数据类型
+所有后续值必须具有相同的数据类型，或者至少必须能够将后续值 <<coerce,coerce>> 为相同的数据类型。
 
-When adding a field dynamically, the first value in the array determines the
-field `type`.  All subsequent values must be of the same datatype or it must
-at least be possible to <<coerce,coerce>> subsequent values to the same
-datatype.
+混合数据类型的数组 _不_ 受支持： [ `10`, `"some string"` ]
 
-Arrays with a mixture of datatypes are _not_ supported: [ `10`, `"some string"` ]
+数组可能包含 `null` 值，它们由配置的 <<null-value,`null_value`>> 替换或完全跳过。
+空数组 `[]` 被视为缺失字段 -- 没有值的字段。
 
-An array may contain `null` values, which are either replaced by the
-configured <<null-value,`null_value`>> or skipped entirely.  An empty array
-`[]` is treated as a missing field -- a field with no values.
-
-Nothing needs to be pre-configured in order to use arrays in documents, they
-are supported out of the box:
+没有任何东西需要预先配置才能在文档中使用数组，它们是开箱即用的：
 
 
 [source,js]
@@ -72,28 +65,22 @@ GET my_index/_search
     "match": {
       "tags": "elasticsearch" <4>
     }
-  }
+  }5
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `tags` field is dynamically added as a `string` field.
-<2> The `lists` field is dynamically added as an `object` field.
-<3> The second document contains no arrays, but can be indexed into the same fields.
-<4> The query looks for `elasticsearch` in the `tags` field, and matches both documents.
+<1> `tags` 字段被自动地作为 `string` 类型字段添加。
+<2> `lists` 字段被自动地作为 `object` 类型字段添加。
+<3> 第二个文档没有不含数组，但是也可以索引到相同的字段。
+<4> 这个查询在 `tag` 字段查找 `elasticsearch` ， 并且匹配到两个文档。
 
-.Multi-value fields and the inverted index
+.多值字段和倒排索引
 ****************************************************
+所有字段类型都支持开箱即用的多值字段，这是源于 Lucene。Lucene 被设计为一个全文搜索引擎。
+为了在海量文本中搜索特定词语，Lucene 将文本标记为特定的词项（term），并将每一个词项（term）分别添加到倒排索引中。
 
-The fact that all field types support multi-value fields out of the box is a
-consequence of the origins of Lucene.  Lucene was designed to be a full text
-search engine.  In order to be able to search for individual words within a
-big block of text, Lucene tokenizes the text into individual terms, and
-adds each term to the inverted index separately.
-
-This means that even a simple text field must be able to support multiple
-values by default.  When other datatypes were added, such as numbers and
-dates, they used the same data structure as strings, and so got multi-values
-for free.
+这意味着即使是一个简单的文本也必须默认支持多值。当其它数据类型如数字或者日期被添加时，
+他们使用和字符串一样的数据结构，因此自然变为多值。
 
 ****************************************************
 
