@@ -1,11 +1,9 @@
 [[token-count]]
-=== Token count datatype
+=== 词元数（token count）数据类型
 
-A field of type `token_count` is really an <<number,`integer`>> field which
-accepts string values, analyzes them, then indexes the number of tokens in the
-string.
+`token_count` 字段类型实际上是一个 <<number,`integer`>> 字段，它接受字符串值并分析，然后索引当中的词元（token）数目。
 
-For instance:
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -44,53 +42,44 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `name` field is an analyzed string field which uses the default `standard` analyzer.
-<2> The `name.length` field is a `token_count` <<multi-fields,multi-field>> which will index the number of tokens in the `name` field.
-<3> This query matches only the document containing `Rachel Alice Williams`, as it contains three tokens.
+<1> `name` 字段是一个被分析的字符串字段，它使用了默认的 `standard` 分析器。
+<2> `name.length` 字段是一个 `token_count` <<multi-fields,multi-field>>，它会索引 `name` 字段中的词元（token）数量。
+<3> 这个查询仅匹配包含 `Rachel Alice Williams` 的文档，因为只有它包含了三个词元（token）。
 
 
 [[token-count-params]]
-==== Parameters for `token_count` fields
+==== `token_count` 字段的参数
 
-The following parameters are accepted by `token_count` fields:
+`token_count` 字段接受以下参数：
 
 [horizontal]
 
 <<analyzer,`analyzer`>>::
 
-    The <<analysis,analyzer>> which should be used to analyze the string
-    value. Required. For best performance, use an analyzer without token
-    filters.
+    应该被用于分析字符串值的<<analysis,分析器>>。必须。为了获得最佳性能，请使用不带词元过滤器（token analyzer）的分析器。
 
 `enable_position_increments`:: 
 
-Indicates if position increments should be counted. 
-Set to `false` if you don't want to count tokens removed by analyzer filters (like <<analysis-stop-tokenfilter,`stop`>>). 
-Defaults to `true`.
+如果计算废纸增量，请标明。
+默认是 `true` 。如果你不想计算被分析器的过滤器（例如 <<analysis-stop-tokenfilter,`stop`>> ）移除的词元（token），请设为 `false` 。
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<doc-values,`doc_values`>>::
 
-    Should the field be stored on disk in a column-stride fashion, so that it
-    can later be used for sorting, aggregations, or scripting? Accepts `true`
-    (default) or `false`.
+    字段是否应该以多列的方式存储在磁盘上，以便以后可以将其用于排序，聚合或脚本？接受 `true` 或 `false` （默认）。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `not_analyzed` （默认）或 `no` 。
 
 <<null-value,`null_value`>>::
 
-    Accepts a numeric value of the same `type` as the field which is
-    substituted for any explicit `null` values.  Defaults to `null`, which
-    means the field is treated as missing.
+    接受一个与该字段相同类型的数值替换显式 `null` 值。默认是 `null` ，意味着该字段被视为缺失。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
+
