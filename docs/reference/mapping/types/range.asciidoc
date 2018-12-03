@@ -1,18 +1,18 @@
 [[range]]
-=== Range datatypes
+=== 范围数据类型
 
-The following range types are supported:
+支持以下的范围类型（range type）：
 
 [horizontal]
-`integer_range`::   A range of signed 32-bit integers with a minimum value of +-2^31^+ and maximum of +2^31^-1+.
-`float_range`::     A range of single-precision 32-bit IEEE 754 floating point values.
-`long_range`::      A range of signed 64-bit integers with a minimum value of +-2^63^+ and maximum of +2^63^-1+.
-`double_range`::    A range of double-precision 64-bit IEEE 754 floating point values.
-`date_range`::      A range of date values represented as unsigned 64-bit integer milliseconds elapsed since system epoch.
-`ip_range` ::       A range of ip values supporting either https://en.wikipedia.org/wiki/IPv4[IPv4] or
-                    https://en.wikipedia.org/wiki/IPv6[IPv6] (or mixed) addresses.
+`integer_range`::   32 位有符号整型数范围。最小值是 +-2^31^+ ，最大值是 +2^31^-1+ 。
+`float_range`::     32 位单精度 IEEE 754 浮点数范围。
+`long_range`::      64 位有符号整型数范围。最小值是 +-2^63^+ ，最大值是 +2^63^-1+ 。
+`double_range`::    64 位双精度 IEEE 754 浮点数范围。
+`date_range`::      以系统纪元经过的 64 位无符号整型数毫秒表示的日期值范围。
+`ip_range` ::       https://en.wikipedia.org/wiki/IPv4[IPv4] 地址 或
+                    https://en.wikipedia.org/wiki/IPv6[IPv6] 地址（或混合）表示的 ip 地址范围。
 
-Below is an example of configuring a mapping with various range fields followed by an example that indexes several range types.
+下面是一个使用各种范围字段配置映射的示例，后跟一个索引多个范围类型的示例。
 
 [source,js]
 --------------------------------------------------
@@ -51,12 +51,12 @@ PUT range_index/_doc/1?refresh
 //CONSOLE
 // TESTSETUP
 
-<1> `date_range` types accept the same field parameters defined by the <<date, `date`>> type.
-<2> Example indexing a meeting with 10 to 20 attendees.
-<3> Date ranges accept the same format as described in <<ranges-on-dates, date range queries>>.
-<4> Example date range using date time stamp. This also accepts <<date-math, date math>> formatting, or "now" for system time.
+<1> `date_range` 类型接受由 <<date, `date`>> 类型定义的相同字段参数。
+<2> 例子索引了一个有 10 到 20 个与会者的会议。
+<3> 日期范围接受与<<ranges-on-dates, 日期范围查询>>中所述相同的格式。
+<4> 日期范围使用时间戳的例子。这也接受<<date-math, 日期数学>>格式, 或者系统时间的 "now"。
 
-The following is an example of a <<query-dsl-term-query, term query>> on the `integer_range` field named "expected_attendees".
+以下是名为 "expected_attendees" 的 `integer_range` 字段中的<<query-dsl-term-query, 词条查询（term query）>>的示例。
 
 [source,js]
 --------------------------------------------------
@@ -73,7 +73,7 @@ GET range_index/_search
 --------------------------------------------------
 // CONSOLE
 
-The result produced by the above query.
+上述查询产生的结果：
 
 [source,js]
 --------------------------------------------------
@@ -110,7 +110,7 @@ The result produced by the above query.
 --------------------------------------------------
 // TESTRESPONSE[s/"took": 13/"took" : $body.took/]
 
-The following is an example of a `date_range` query over the `date_range` field named "time_frame".
+下面是一个在名为 time_frame 的日期范围字段上的 `date_range` 查询例子。
 
 [source,js]
 --------------------------------------------------
@@ -129,11 +129,11 @@ GET range_index/_search
 --------------------------------------------------
 // CONSOLE
 
-<1> Range queries work the same as described in <<query-dsl-range-query, range query>>.
-<2> Range queries over range <<mapping-types, fields>> support a `relation` parameter which can be one of `WITHIN`, `CONTAINS`,
-    `INTERSECTS` (default).
+<1> 范围查询的工作与<<query-dsl-range-query, 范围查询>>中所述相同。
+<2> 基于范围字段的范围查支持一个 `relation` 参数，可以是 `WITHIN` 、 `CONTAINS` 、
+    `INTERSECTS` （默认）之一。
 
-This query produces a similar result:
+上述查询产生的结果：
 
 [source,js]
 --------------------------------------------------
@@ -173,8 +173,7 @@ This query produces a similar result:
 [[ip-range]]
 ==== IP Range
 
-In addition to the range format above, IP ranges can be provided in
-https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation[CIDR] notation:
+除上述范围格式外，还可以使用 https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation[CIDR] 表示法提供 IP 范围：
 
 [source,js]
 --------------------------------------------------
@@ -195,28 +194,25 @@ PUT range_index/_doc/2
 // CONSOLE
 
 [[range-params]]
-==== Parameters for range fields
+==== 范围字段的参数
 
-The following parameters are accepted by range types:
+范围字段接受以下参数：
 
 [horizontal]
 
 <<coerce,`coerce`>>::
 
-    Try to convert strings to numbers and truncate fractions for integers.
-    Accepts `true` (default) and `false`.
+    尝试将字符串转换为数字并截断整数的分数。接受 `true` （默认）和 `false` 。
 
 <<mapping-boost,`boost`>>::
 
-    Mapping field-level query time boosting. Accepts a floating point number, defaults
-    to `1.0`.
+    映射字段级查询时间提升。接受一个浮点数，默认为 `1.0` 。
 
 <<mapping-index,`index`>>::
 
-    Should the field be searchable? Accepts `true` (default) and `false`.
+    字段是否可搜索？接受 `true` （默认）或 `false` 。
 
 <<mapping-store,`store`>>::
 
-    Whether the field value should be stored and retrievable separately from
-    the <<mapping-source-field,`_source`>> field. Accepts `true` or `false`
-    (default).
+    字段值是否应与 <<mapping-source-field,`_source`>> 字段分开存储和检索。接受 `true` 或 `false` （默认）。
+
