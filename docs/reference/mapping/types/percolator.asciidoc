@@ -1,17 +1,12 @@
 [[percolator]]
-=== Percolator type
+=== 渗透器类型
 
-The `percolator` field type parses a json structure into a native query and
-stores that query, so that the <<query-dsl-percolate-query,percolate query>>
-can use it to match provided documents.
+渗透器（ `percolator` ）字段类型将 json 结构解析为原生查询，并存储该查询，以便<<query-dsl-percolate-query,渗透查询>>可以使用它匹配提供的文档。
 
-Any field that contains a json object can be configured to be a percolator
-field. The percolator field type has no settings. Just configuring the `percolator`
-field type is sufficient to instruct Elasticsearch to treat a field as a
-query.
+包含 json 对象的任何字段都可以配置为渗透器字段。渗透器字段类型没有设置。
+只需配置渗透器字段类型就足以指示 Elasticsearch 将字段视为查询。
 
-If the following mapping configures the `percolator` field type for the
-`query` field:
+如果以下映射为 `query` 字段配置 `percolator` 字段类型：
 
 [source,js]
 --------------------------------------------------
@@ -34,7 +29,7 @@ PUT my_index
 // CONSOLE
 // TESTSETUP
 
-Then you can index a query:
+然后你可以索引一个查询：
 
 [source,js]
 --------------------------------------------------
@@ -52,20 +47,18 @@ PUT my_index/_doc/match_value
 [IMPORTANT]
 =====================================
 
-Fields referred to in a percolator query must *already* exist in the mapping
-associated with the index used for percolation. In order to make sure these fields exist,
-add or update a mapping via the <<indices-create-index,create index>> or <<indices-put-mapping,put mapping>> APIs.
+在渗透器查询中引用的字段必须 *已经* 存在于与用于渗透的索引相关联的映射中。
+为了确保这些字段存在，通过<<indices-create-index,创建索引>>或<<indices-put-mapping,放置映射>> API 添加或更新映射。
+在渗透器查询中引用的字段可以存在于包含渗透器字段类型的任何类型的索引中。
 
 =====================================
 
 [float]
-==== Reindexing your percolator queries
+==== 重新索引你的渗透器查询
 
-Reindexing percolator queries is sometimes required to benefit from improvements made to the `percolator` field type in
-new releases.
+有时候，重新索引渗透器查询才能从新版本中对渗透器字段类型所做的改进中受益。
 
-Reindexing percolator queries can be reindexed by using the <<docs-reindex,reindex api>>.
-Lets take a look at the following index with a percolator field type:
+可以使用 <<docs-reindex,reindex api>> 重新索引渗透器查询。让我们看看下面的一个带有渗透器字段类型的索引吧：
 
 [source,js]
 --------------------------------------------------
@@ -109,11 +102,10 @@ PUT queries/_doc/1?refresh
 // CONSOLE
 // TEST[continued]
 
-<1> It is always recommended to define an alias for your index, so that in case of a reindex systems / applications
-    don't need to be changed to know that the percolator queries are now in a different index.
+<1> 始终建议为索引定义别名，以便在重新索引系统/应用程序时不需要更改就可以知道渗透器查询现在位于不同的索引中。
 
-Lets say you're going to upgrade to a new major version and in order for the new Elasticsearch version to still be able
-to read your queries you need to reindex your queries into a new index on the current Elasticsearch version:
+假设你要升级到新的主要版本，并且为了使新的 Elasticsearch 版本仍然能够读取你的查询，
+那么你需要将查询重新索引到当前 Elasticsearch 版本的新索引中：
 
 [source,js]
 --------------------------------------------------
@@ -164,9 +156,9 @@ POST _aliases
 // CONSOLE
 // TEST[continued]
 
-<1> If you have an alias don't forget to point it to the new index.
+<1> 如果你有一个别名，别忘记将它指向有一个新索引。
 
-Executing the `percolate` query via the `queries` alias:
+通过 `queries` 别名执行 `percolate` 查询：
 
 [source,js]
 --------------------------------------------------
@@ -185,7 +177,7 @@ GET /queries/_search
 // CONSOLE
 // TEST[continued]
 
-now returns matches from the new index:
+现在返回来自新索引的匹配结果：
 
 [source,js]
 --------------------------------------------------
@@ -224,29 +216,26 @@ now returns matches from the new index:
 --------------------------------------------------
 // TESTRESPONSE[s/"took": 3,/"took": "$body.took",/]
 
-<1> Percolator query hit is now being presented from the new index.
+<1> 现在正在从新索引中呈现渗透器查询命中。
 
 [float]
-==== Optimizing query time text analysis
+==== 优化查询时间文本分析
 
-When the percolator verifies a percolator candidate match it is going to parse, perform query time text analysis and actually run
-the percolator query on the document being percolated. This is done for each candidate match and every time the `percolate` query executes.
-If your query time text analysis is relatively expensive part of query parsing then text analysis can become the
-dominating factor time is being spent on when percolating. This query parsing overhead can become noticeable when the
-percolator ends up verifying many candidate percolator query matches.
+当渗透器验证渗透器候选匹配时，它将进行解析，执行查询时间文本分析并实际对正在渗透的文档运行渗透器查询。这是针对每个候选匹配以及每次执行 `percolate` 查询时完成的。
+如果你的查询时间文本分析是查询解析的相对昂贵的一部分，那么文本分析可能成为渗透时花费的主要因素。当渗透器最终验证许多候选渗透器查询匹配时，该查询解析开销可能变得明显。
 
-To avoid the most expensive part of text analysis at percolate time. One can choose to do the expensive part of text analysis
-when indexing the percolator query. This requires using two different analyzers. The first analyzer actually performs
-text analysis that needs be performed (expensive part). The second analyzer (usually whitespace) just splits the generated tokens
-that the first analyzer has produced. Then before indexing a percolator query, the analyze api should be used to analyze the query
-text with the more expensive analyzer. The result of the analyze api, the tokens, should be used to substitute the original query
-text in the percolator query. It is important that the query should now be configured to override the analyzer from the mapping and
-just the second analyzer. Most text based queries support an `analyzer` option (`match`, `query_string`, `simple_query_string`).
-Using this approach the expensive text analysis is performed once instead of many times.
+避免在渗透时间进行最昂贵的文本分析。在索引渗透器查询时，可以选择进行昂贵的文本分析。
+这需要使用两个不同的分析仪。第一个分析器实际执行需要执行的文本分析（昂贵的部分）。
+第二个分析器（通常是空白分析器）只是分割第一个分析仪产生的生成的词元（ `token` ）。
+然后在索引渗透器查询之前，应该使用分析 api 来使用更昂贵的分析器来分析查询文本。
 
-Lets demonstrate this workflow via a simplified example.
+分析 api 的结果（词元 `token` ）应该用于替换渗透器查询中的原始查询文本。现在应该将查询配置为从映射和第二个分析器覆盖分析器，这一点很重要。
+大多数基于文本的查询都支持 `analyzer` 选项（ `match` ， `query_string` ， `simple_query_string` ）。
+使用这种方法，昂贵的文本分析只执行一次而不是多次。
 
-Lets say we want to index the following percolator query:
+让我们通过简化的例子演示这个工作流程。
+
+假设我们想要索引以下渗透器查询：
 
 [source,js]
 --------------------------------------------------
@@ -262,7 +251,7 @@ Lets say we want to index the following percolator query:
 --------------------------------------------------
 // NOTCONSOLE
 
-with these settings and mapping:
+使用这些设置和映射：
 
 [source,js]
 --------------------------------------------------
@@ -296,9 +285,9 @@ PUT /test_index
 // CONSOLE
 // TEST[continued]
 
-<1> For the purpose of this example, this analyzer is considered expensive.
+<1> 出于例子的目的，该分析器被认为是昂贵的。
 
-First we need to use the analyze api to perform the text analysis prior to indexing:
+首先，我们需要使用分析 api 在索引之前执行文本分析：
 
 [source,js]
 --------------------------------------------------
@@ -311,7 +300,7 @@ POST /test_index/_analyze
 // CONSOLE
 // TEST[continued]
 
-This results the following response:
+这产生以下响应：
 
 [source,js]
 --------------------------------------------------
@@ -336,7 +325,7 @@ This results the following response:
 --------------------------------------------------
 // TESTRESPONSE
 
-All the tokens in the returned order need to replace the query text in the percolator query:
+返回的所有 tokens 需要替换渗透器查询中的查询文本：
 
 [source,js]
 --------------------------------------------------
@@ -355,13 +344,11 @@ PUT /test_index/_doc/1?refresh
 // CONSOLE
 // TEST[continued]
 
-<1> It is important to select a whitespace analyzer here, otherwise the analyzer defined in the mapping will be used,
-which defeats the point of using this workflow. Note that `whitespace` is a built-in analyzer, if a different analyzer
-needs to be used, it needs to be configured first in the index's settings.
+<1> 在这里选择空白分析器很重要，否则将使用映射中定义的分析器，它会使得使用该工作流程失败。请注意，空白分析器是内置分析器，如果需要使用不同的分析器，则需要首先在索引的设置中进行配置。
 
-The analyze api prior to the indexing the percolator flow should be done for each percolator query.
+应该为每个渗透器查询完成在为渗滤器流索引之前的分析 api。
 
-At percolate time nothing changes and the `percolate` query can be defined normally:
+在渗透时，没有任何变化，渗透查询可以正常定义：
 
 [source,js]
 --------------------------------------------------
@@ -380,7 +367,7 @@ GET /test_index/_search
 // CONSOLE
 // TEST[continued]
 
-This results in a response like this:
+这会产生如下响应：
 
 [source,js]
 --------------------------------------------------
@@ -423,16 +410,14 @@ This results in a response like this:
 // TESTRESPONSE[s/"took": 6,/"took": "$body.took",/]
 
 [float]
-==== Optimizing wildcard queries.
+==== 优化通配符查询
 
-Wildcard queries are  more expensive than other queries for the percolator,
-especially if the wildcard expressions are large.
+通配符查询比渗透器的其他查询更昂贵，尤其是在通配符表达式很大的情况下。
 
-In the case of `wildcard` queries with prefix wildcard expressions or just the `prefix` query,
-the `edge_ngram` token filter can be used to replace these queries with regular `term`
-query on a field where the `edge_ngram` token filter is configured.
+对于带有前缀通配符表达式的 `wildcard` 查询或只是 `prefix` 查询，
+可以使用 `edge_ngram` 词元渗透器用配置了 `edge_ngram` 词元过滤器的字段上的常规 `term` 查询替换。
 
-Creating an index with custom analysis settings:
+使用自定义分析设置创建索引：
 
 [source,js]
 --------------------------------------------------
@@ -483,13 +468,11 @@ PUT my_queries1
 // CONSOLE
 // TEST[continued]
 
-<1> The analyzer that generates the prefix tokens to be used at index time only.
-<2> Increase the `min_gram` and decrease `max_gram` settings based on your prefix search needs.
-<3> This multifield should be used to do the prefix search
-    with a `term` or `match` query instead of a `prefix` or `wildcard` query.
+<1> 生成前缀词元（tokens）的分析器仅在索引时使用。
+<2> 根据你的前缀搜索需求增加 `min_gram` 并减少 `max_gram` 设置。
+<3> 这个多字段应该用于使用 `term` 或 `match` 查询而不是 `prefix` 或 `wildcard` 查询进行前缀搜索。
 
-
-Then instead of indexing the following query:
+然后，不是索引以下查询：
 
 [source,js]
 --------------------------------------------------
@@ -503,7 +486,7 @@ Then instead of indexing the following query:
 --------------------------------------------------
 // NOTCONSOLE
 
-this query below should be indexed:
+而是以下查询才应该被索引：
 
 [source,js]
 --------------------------------------------------
@@ -519,10 +502,9 @@ PUT /my_queries1/_doc/1?refresh
 // CONSOLE
 // TEST[continued]
 
-This way can handle the second query more efficiently than the first query.
+这种方式可以比第一个查询更有效地处理第二个查询。
 
-The following search request will match with the previously indexed
-percolator query:
+以下搜索请求将与先前索引的渗透器查询匹配：
 
 [source,js]
 --------------------------------------------------
@@ -580,9 +562,7 @@ GET /my_queries1/_search
 --------------------------------------------------
 // TESTRESPONSE[s/"took": 6,/"took": "$body.took",/]
 
-The same technique can also be used to speed up suffix
-wildcard searches. By using the `reverse` token filter
-before the `edge_ngram` token filter.
+相同的技术也可用于加速后缀通配符搜索。在 `edge_ngram` 标记过滤器之前使用 `reverse` 标记过滤器。
 
 [source,js]
 --------------------------------------------------
@@ -642,11 +622,9 @@ PUT my_queries2
 // CONSOLE
 // TEST[continued]
 
-<1> A custom analyzer is needed at search time too, because otherwise
-    the query terms are not being reversed and would otherwise not match
-    with the reserved suffix tokens.
+<1> 在搜索时也需要自定义分析器，因为否则查询项不会被反转，否则将与保留的后缀词元（token）不匹配。
 
-Then instead of indexing the following query:
+然后，不是索引以下查询：
 
 [source,js]
 --------------------------------------------------
@@ -660,7 +638,7 @@ Then instead of indexing the following query:
 --------------------------------------------------
 // NOTCONSOLE
 
-the following query below should be indexed:
+而是以下查询才应该被索引：
 
 [source,js]
 --------------------------------------------------
@@ -676,11 +654,9 @@ PUT /my_queries2/_doc/2?refresh
 // CONSOLE
 // TEST[continued]
 
-<1> The `match` query should be used instead of the `term` query,
-    because text analysis needs to reverse the query terms.
+<1> 应该使用 `match` 查询而不是 `term` 查询，因为文本分析需要反转查询术语。
 
-The following search request will match with the previously indexed
-percolator query:
+以下搜索请求将与先前索引的渗透器查询匹配：
 
 [source,js]
 --------------------------------------------------
@@ -700,49 +676,39 @@ GET /my_queries2/_search
 // TEST[continued]
 
 [float]
-==== Dedicated Percolator Index
+==== 专用渗透器指数
 
-Percolate queries can be added to any index. Instead of adding percolate queries to the index the data resides in,
-these queries can also be added to a dedicated index. The advantage of this is that this dedicated percolator index
-can have its own index settings (For example the number of primary and replica shards). If you choose to have a dedicated
-percolate index, you need to make sure that the mappings from the normal index are also available on the percolate index.
-Otherwise percolate queries can be parsed incorrectly.
+渗透器查询可以被添加到任意索引中。相较于将渗透器查询添加到数据所在的索引中，这些查询也可以添加到专用索引中。
+这样做的好处是这个专用的过滤器索引可以有自己的索引设置（例如主分片和副本分片的数量）。
+你如果选择专用的渗透索引，则需要确保渗透索引上的普通索引的映射也可用。否则，可能会错误地解析渗透查询。
 
 [float]
-==== Forcing Unmapped Fields to be Handled as Strings
+==== 强制将未映射的字段作为字符串处理
 
-In certain cases it is unknown what kind of percolator queries do get registered, and if no field mapping exists for fields
-that are referred by percolator queries then adding a percolator query fails. This means the mapping needs to be updated
-to have the field with the appropriate settings, and then the percolator query can be added. But sometimes it is sufficient
-if all unmapped fields are handled as if these were default text fields. In those cases one can configure the
-`index.percolator.map_unmapped_fields_as_text` setting to `true` (default to `false`) and then if a field referred in
-a percolator query does not exist, it will be handled as a default text field so that adding the percolator query doesn't
-fail.
+在某些情况下，不知道哪种渗透器查询会被注册，如果渗透器查询引用的字段不存在字段映射，则添加渗透器查询失败。
+这意味着需要更新映射以使字段具有适当的设置，然后可以添加渗透器查询。但有时如果处理所有未映射的字段就足够了，就好像是默认文本字段。
+在这些情况下，可以将 `index.percolator.map_unmapped_fields_as_text` 设置配置为 `true` （默认为 `false` ），
+然后如果在渗透器查询中引用的字段不存在，则将其作为默认文本字段处理，以便添加渗透器查询不会失败。
 
 [float]
-==== Limitations
+==== 限制
 
 [float]
 ===== Parent/child
 
-Because the `percolate` query is processing one document at a time, it doesn't support queries and filters that run
-against child documents such as `has_child` and `has_parent`.
+因为渗透查询一次处理一个文档，所以它不支持针对子文档运行的查询和过滤器，例如 `has_child` 和 `has_parent` 。
 
 [float]
-===== Fetching queries
+===== 获取查询
 
-There are a number of queries that fetch data via a get call during query parsing. For example the `terms` query when
-using terms lookup, `template` query when using indexed scripts and `geo_shape` when using pre-indexed shapes. When these
-queries are indexed by the `percolator` field type then the get call is executed once. So each time the `percolator`
-query evaluates these queries, the fetches terms, shapes etc. as the were upon index time will be used. Important to note
-is that fetching of terms that these queries do, happens both each time the percolator query gets indexed on both primary
-and replica shards, so the terms that are actually indexed can be different between shard copies, if the source index
-changed while indexing.
+在查询解析期间，有许多查询通过 get 调用获取数据。例如，使用词项查询时的 `terms` 查询，使用索引脚本时的 `template` 查询和使用预索引形状时的 `geo_shape` 。
+当这些查询被 `percolator` 字段类型索引时，get 调用执行一次。因此，每次渗透查询评估这些查询时，将使用索引时间的条件，形状等。
+需要注意的重要一点是，每当渗透器查询在主分片和副本分片上都被索引时，都会获取这些查询所执行的词项，
+因此，如果源索引在索引时发生更改，则实际索引的词项在分片副本之间可能会有所不同。
 
 [float]
-===== Script query
+===== 脚本查询
 
-The script inside a `script` query can only access doc values fields. The `percolate` query indexes the provided document
-into an in-memory index. This in-memory index doesn't support stored fields and because of that the `_source` field and
-other stored fields are not stored. This is the reason why in the `script` query the `_source` and other stored fields
-aren't available.
+脚本查询中的脚本只能访问 doc 值字段。渗透查询将提供的文档索引到内存索引中。
+此内存索引不支持存储字段，因此不存储 `_source` 字段和其他存储字段。
+这就是为什么在脚本查询中 `_source` 和其他存储字段不可用的原因。
