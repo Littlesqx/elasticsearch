@@ -1,13 +1,12 @@
 [[alias]]
-=== Alias datatype
+=== 别名数据类型
 
-NOTE: Field aliases can only be specified on indexes with a single mapping type. To add a field
-alias, the index must therefore have been created in 6.0 or later, or be an older index with
-the setting `index.mapping.single_type: true`. Please see <<removal-of-types>> for more information.
+NOTE: 只能在具有单一映射类型的索引上指定字段别名。
+要添加字段别名，索引必须已在 6.0 或更高版本中创建，或者是设置了 `index.mapping.single_type：true` 的旧索引。
+请参考 <<removal-of-types>> 以查阅更多信息。
 
-An `alias` mapping defines an alternate name for a field in the  index.
-The alias can be used in place of the target field in <<search, search>> requests,
-and selected other APIs like <<search-field-caps, field capabilities>>.
+`alias` 映射定义了索引中字段的备用名称。别名可用于代替<<search, 搜索>>请求中的目标字段，
+以及选择的其他 API，如<<search-field-caps, 字段能力（field capabilities）>>。
 
 [source,js]
 --------------------------------
@@ -44,16 +43,12 @@ GET _search
 --------------------------------
 // CONSOLE
 
-<1> The path to the target field. Note that this must be the full path, including any parent
-objects (e.g. `object1.object2.field`).
+<1> 目标字段的路径。请注意，这必须是完整路径，包括任何父对象，例如 `object1.object2.field` 。
 
-Almost all components of the search request accept field aliases. In particular, aliases can be
-used in queries, aggregations, and sort fields, as well as when requesting `docvalue_fields`,
-`stored_fields`, suggestions, and highlights. Scripts also support aliases when accessing
-field values. Please see the section on <<unsupported-apis, unsupported APIs>> for exceptions.
+搜索请求的几乎所有组件都接受字段别名。特别地，别名可用于查询、聚合和排序字段，以及请求时的 `docvalue_fields` 、 `stored_fields` 、建议和高亮显示。
+在访问字段值时，脚本也支持别名。对于例外的情况，请参考 <<unsupported-apis, 不支持的 API>>。
 
-In some parts of the search request and when requesting field capabilities, field wildcard patterns can be
-provided. In these cases, the wildcard pattern will match field aliases in addition to concrete fields:
+在搜索请求以及请求字段功能（field capabilities）时的某些部分，可以提供字段通配符模式。在这些情况下，除了具体字段之外，通配符模式还将匹配字段别名：
 
 [source,js]
 --------------------------------
@@ -63,25 +58,22 @@ GET trips/_field_caps?fields=route_*,transit_mode
 // TEST[continued]
 
 [[alias-targets]]
-==== Alias targets
+==== 别名目标
 
-There are a few restrictions on the target of an alias:
+别名的目标有一些限制：
 
-  * The target must be a concrete field, and not an object or another field alias.
-  * The target field must exist at the time the alias is created.
-  * If nested objects are defined, a field alias must have the same nested scope as its target.
+  * 目标必须是具体字段，而不是对象或其他字段别名。
+  * 目标字段必须在创建别名时存在。
+  * 如果定义了嵌套对象，则字段别名必须与其目标具有相同的嵌套范围。
 
-Additionally, a field alias can only have one target. This means that it is not possible to use a
-field alias to query over multiple target fields in a single clause.
+此外，字段别名只能有一个目标。这意味着无法使用字段别名来查询单个子句中的多个目标字段。
 
 [[unsupported-apis]]
-==== Unsupported APIs
+==== 不支持的 API
 
-Writes to field aliases are not supported: attempting to use an alias in an index or update request
-will result in a failure. Likewise, aliases cannot be used as the target of `copy_to` or in multi-fields.
+不支持写入字段别名：尝试在索引或更新请求中使用别名将会失败。同样，别名不能用作 `copy_to` 或多字段的目标。
 
-Because alias names are not present in the document source, aliases cannot be used when performing
-source filtering. For example, the following request will return an empty result for `_source`:
+由于文档源中不存在别名，因此在执行源过滤时不能使用别名。例如，以下请求将返回 `_source` 的空结果：
 
 [source,js]
 --------------------------------
@@ -96,10 +88,7 @@ GET /_search
 // CONSOLE
 // TEST[continued]
 
-Currently only the search and field capabilities APIs will accept and resolve field aliases.
-Other APIs that accept field names, such as <<docs-termvectors, term vectors>>, cannot be used
-with field aliases.
+目前，只有搜索和字段功能（field capabilities） API 才会接受并解析字段别名。其他接受字段名称的 API 不能与字段别名一起使用，例如<<docs-termvectors, 词向量（term vectors）>>。
 
-Finally, some queries, such as `terms`, `geo_shape`, and `more_like_this`, allow for fetching query
-information from an indexed document. Because field aliases aren't supported when fetching documents,
-the part of the query that specifies the lookup path cannot refer to a field by its alias.
+最后，某些查询允许从索引文档中获取查询信息，例如 `terms` 、 `geo_shape` 和 `more_like_this` 。
+由于在获取文档时不支持字段别名，因此指定查找路径的查询部分不能通过其别名定位到一个字段。
