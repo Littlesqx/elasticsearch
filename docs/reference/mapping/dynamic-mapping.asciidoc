@@ -1,11 +1,8 @@
 [[dynamic-mapping]]
-== Dynamic Mapping
+== 动态映射
 
-One of the most important features of Elasticsearch is that it tries to get
-out of your way and let you start exploring your data as quickly as possible.
-To index a document, you don't have to first create an index, define a mapping
-type, and define your fields -- you can just index a document and the index,
-type, and fields will spring to life automatically:
+Elasticsearch 最重要的功能之一是它试图摆脱你的方式，让你尽快地开始探索你的数据。
+要索引文档，你不必先创建索引、定义映射类型和定义字段 -- 只需要索引文档，而索引、类型和字段将自动生效：
 
 [source,js]
 --------------------------------------------------
@@ -13,24 +10,19 @@ PUT data/_doc/1 <1>
 { "count": 5 }
 --------------------------------------------------
 // CONSOLE
-<1> Creates the `data` index, the `_doc` mapping type, and a field
-    called `count` with datatype `long`.
+<1> 创建 `data` 索引， `_doc` 映射类型、名为 `count` 类型为 `long` 的字段。
 
-The automatic detection and addition of new fields is called
-_dynamic mapping_. The dynamic mapping rules can be customised to suit your
-purposes with:
+自动检测和添加新字段称为 _dynamic mapping_ 。可以自定义动态映射规则以满足你的目的：
 
-<<dynamic-field-mapping,Dynamic field mappings>>::
+<<dynamic-field-mapping,动态字段映射>>::
 
-    The rules governing dynamic field detection.
+    管理动态字段检测的规则
 
-<<dynamic-templates,Dynamic templates>>::
+<<dynamic-templates,动态模板>>::
 
-    Custom rules to configure the mapping for dynamically added fields.
+    自定义规则，用于配置动态添加字段的映射。
 
-TIP: <<indices-templates,Index templates>> allow you to configure the default
-mappings, settings and aliases for new indices, whether created
-automatically or explicitly.
+提示：<<indices-templates,索引模板>>允许你配置新索引的默认映射，设置和别名，无论是自动创建还是显式创建。
 
 include::dynamic/field-mapping.asciidoc[]
 
