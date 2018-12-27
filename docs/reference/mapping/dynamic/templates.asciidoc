@@ -1,24 +1,18 @@
 [[dynamic-templates]]
-=== Dynamic templates
+=== 动态模板
 
-Dynamic templates allow you to define custom mappings that can be applied to
-dynamically added fields based on:
+动态模板允许你定义可应用于动态添加字段的自定义映射，具体取决于：
 
-* the <<dynamic-mapping,datatype>> detected by Elasticsearch, with <<match-mapping-type,`match_mapping_type`>>.
-* the name of the field, with <<match-unmatch,`match` and `unmatch`>> or <<match-pattern,`match_pattern`>>.
-* the full dotted path to the field, with <<path-match-unmatch,`path_match` and `path_unmatch`>>.
+* Elasticsearch 的<<dynamic-mapping,数据类型>>，通过 <<match-mapping-type,`match_mapping_type`>> 。
+* 字段名，通过 <<match-unmatch,`match` 和 `unmatch`>> 或 <<match-pattern,`match_pattern`>> 。
+* 字段的完整虚线路径，使用 << path-match-unmatch,`path_match` 和 `path_unmatch`>> 。
 
-The original field name `{name}` and the detected datatype
-`{dynamic_type`} <<template-variables,template variables>> can be used in
-the mapping specification as placeholders.
+原始字段名 `{name}` 和检测到的数据类型 `{dynamic_type`} <<template-variables,模板变量>> 可以在映射规范中用作占位符。
 
-IMPORTANT: Dynamic field mappings are only added when a field contains a
-concrete value -- not `null` or an empty array. This means that if the
-`null_value` option  is used in a `dynamic_template`, it will only be applied
-after the first document  with a concrete value for the field has been
-indexed.
+重要：仅当字段包含具体值时才会添加动态字段映射 - 不是 `null` 或空数组。
+这意味着如果在 `dynamic_template` 中使用 `null_value` 选项，它将仅在具有该字段的具体值的第一个文档被索引之后应用。
 
-Dynamic templates are specified as an array of named objects:
+动态模板被指定为命名对象的数组：
 
 [source,js]
 --------------------------------------------------
@@ -33,39 +27,30 @@ Dynamic templates are specified as an array of named objects:
   ]
 --------------------------------------------------
 // NOTCONSOLE
-<1> The template name can be any string value.
-<2> The match conditions can include any of : `match_mapping_type`, `match`, `match_pattern`, `unmatch`, `path_match`, `path_unmatch`.
-<3> The mapping that the matched field should use.
+<1> 模板名称可以是任何字符串值。
+<2> 匹配条件可包括以下任何一项： `match_mapping_type` 、 `match` 、 `match_pattern` 、 `unmatch` 、 `path_match` 、 `path_unmatch` 。
+<3> 匹配字段应使用的映射。
 
-
-Templates are processed in order -- the first matching template wins. When
-putting new dynamic templates through the <<indices-put-mapping, put mapping>> API,
-all existing templates are overwritten. This allows for dynamic templates to be
-reordered or deleted after they were initially added.
+模板按顺序处理 - 第一个匹配的模板获胜。通过 <<indices-put-mapping,put mapping>> API 放置新的动态模板时，将覆盖所有现有模板。这允许动态模板在最初添加后重新排序或删除。
 
 [[match-mapping-type]]
 ==== `match_mapping_type`
 
-The `match_mapping_type` is the datatype detected by the json parser. Since
-JSON doesn't allow to distinguish a `long` from an `integer` or a `double` from
-a `float`, it will always choose the wider datatype, ie. `long` for integers
-and `double` for floating-point numbers.
+`match_mapping_type` 是通过 json 解析器检测到的数据类型。自从 JSON 不允许区分 `long` 和 `integer` 、 `double` 和 `float` ， 它会总是选择更大的数据类型，
+即整形的 `long` 和 浮点型的 `double` 。 
 
-The following datatypes may be automatically detected:
+以下数据类型可能会被自动检测：
 
- - `boolean` when `true` or `false` are encountered.
- - `date` when <<date-detection,date detection>> is enabled and a string is
-   found that matches any of the configured date formats.
- - `double` for numbers with a decimal part.
- - `long` for numbers without a decimal part.
- - `object` for objects, also called hashes.
- - `string` for character strings.
+ - `boolean` ，当检测到 `true` 或 `false` 。
+ - `date` ，当 <<date-detection,日期检测>> 启用，并且字符串值被发现匹配上任意配置好的格式。
+ - `double` ，有小数部分的数字。
+ - `long` ，没有小数部分的数字。
+ - `object` ，对象，也叫散列（hashes）。
+ - `string` ，字符串。
 
-`*` may also be used in order to match all datatypes.
+`*` 可用于匹配所有数据类型。
 
-For example, if we wanted to map all integer fields as `integer` instead of
-`long`, and all `string` fields as both `text` and `keyword`, we
-could use the following template:
+例如，我们如果想将所有整数字段映射为 `integer` 而不是 `long` ，并将所有 `string` 字段映射为 `text` 和 `keyword` ，可以使用以下模板：
 
 [source,js]
 --------------------------------------------------
@@ -108,20 +93,16 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `my_integer` field is mapped as an `integer`.
-<2> The `my_string` field is mapped as a `text`, with a `keyword` <<multi-fields,multi field>>.
+<1> `my_integer` 字段被映射为 `integer` 。
+<2> `my_string` 字段被映射为 `text` ，并带有 `keyword` <<multi-fields,子字段>>。
 
 
 [[match-unmatch]]
-==== `match` and `unmatch`
+==== `match` 和 `unmatch`
 
-The `match` parameter uses a pattern to match on the field name, while
-`unmatch` uses a pattern to exclude fields matched by `match`.
+`match` 参数使用模式匹配字段名称，而 `unmatch` 使用模式排除匹配 `match` 的字段。
 
-The following example matches all `string` fields whose name starts with
-`long_` (except for those which end with `_text`) and maps them as `long`
-fields:
-
+下面的示例匹配名称以 `long_` 开头的所有 `string` 字段（除了那些以 `_text` 结尾的字段）并将它们映射为 `long` 字段：
 
 [source,js]
 --------------------------------------------------
@@ -152,15 +133,13 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `long_num` field is mapped as a `long`.
-<2> The `long_text` field uses the default `string` mapping.
+<1> `long_num` 字段被映射为 `long` 。
+<2> `long_text` 字段使用默认的 `string` 映射。
 
 [[match-pattern]]
 ==== `match_pattern`
 
-The `match_pattern` parameter adjusts the behavior of the `match` parameter
-such that it supports full Java regular expression matching on the field name
-instead of simple wildcards, for instance:
+`match_pattern` 参数调整 `match` 参数的行为，使其支持字段名称上的完整 Java 正则表达式匹配，而不是简单的通配符，例如：
 
 [source,js]
 --------------------------------------------------
@@ -170,14 +149,12 @@ instead of simple wildcards, for instance:
 // NOTCONSOLE
 
 [[path-match-unmatch]]
-==== `path_match` and `path_unmatch`
+==== `path_match` 和 `path_unmatch`
 
-The `path_match` and `path_unmatch` parameters work in the same way as `match`
-and `unmatch`, but operate on the full dotted path to the field, not just the
-final name, e.g. `some_object.*.some_field`.
+`path_match` 和 `path_unmatch` 参数的工作方式与 `match` 和 `unmatch` 相同，但是它们在字段的完整点线路径上操作，而不仅仅是最终名称，
+例如： `some_object`.*.`some_field` 。
 
-This example copies the values of any fields in the `name` object to the
-top-level `full_name` field, except for the `middle` field:
+此示例将 `name` 对象中的任何字段的值复制到顶级 `full_name` 字段，但 `middle` 字段除外：
 
 [source,js]
 --------------------------------------------------
@@ -213,12 +190,10 @@ PUT my_index/_doc/1
 // CONSOLE
 
 [[template-variables]]
-==== `{name}` and `{dynamic_type}`
+==== `{name}` 和 `{dynamic_type}`                       
 
-The `{name}` and `{dynamic_type}` placeholders are replaced in the `mapping`
-with the field name and detected dynamic type.  The following example sets all
-string fields to use an <<analyzer,`analyzer`>> with the same name as the
-field, and disables <<doc-values,`doc_values`>> for all non-string fields:
+`{name}` 和 `{dynamic_type}` 占位符在 `mapping` 中被替换为字段名称和检测到的动态类型。
+以下示例将所有字符串字段设置为使用与该字段同名的 <<analyzer,`analyzer`>> ，并为所有非字符串字段禁用 <<doc-values,`doc_values`>> ：
 
 [source,js]
 --------------------------------------------------
@@ -258,21 +233,19 @@ PUT my_index/_doc/1
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `english` field is mapped as a `string` field with the `english` analyzer.
-<2> The `count` field is mapped as a `long` field with `doc_values` disabled.
+<1> `english` 字段被映射为 `string` 字段，使用 `english` 分析器。
+<2> `count` 字段被映射为 `long` 字段，并且禁用 `doc_values` 。
 
 [[template-examples]]
-==== Template examples
+==== Template 例子
 
-Here are some examples of potentially useful dynamic templates:
+以下是一些可能有用的动态模板示例：
 
-===== Structured search
+===== 结构化搜索
 
-By default Elasticsearch will map string fields as a `text` field with a sub
-`keyword` field. However if you are only indexing structured content and not
-interested in full text search, you can make Elasticsearch map your fields
-only as `keyword`s. Note that this means that in order to search those fields,
-you will have to search on the exact same value that was indexed.
+默认情况下，Elasticsearch 会将字符串字段映射为带有子 `keyword` 字段的 `text` 字段。
+但是，如果只是对结构化内容编制索引而对全文搜索不感兴趣，则可以使 Elasticsearch 仅将字段映射为 `keyword` 。
+请注意，这意味着为了搜索这些字段，必须搜索与索引完全相同的值。
 
 [source,js]
 --------------------------------------------------
@@ -296,13 +269,10 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-===== `text`-only mappings for strings
+===== `text`- 仅仅为字符串映射
 
-On the contrary to the previous example, if the only thing that you care about
-on your string fields is full-text search, and if you don't plan on running
-aggregations, sorting or exact search on your string fields, you could tell
-Elasticsearch to map it only as a text field (which was the default behaviour
-before 5.0):
+与前面的示例相反，如果你在字符串字段中唯一关心的是全文搜索，并且如果您不打算在字符串字段上运行聚合，排序或精确搜索，
+那么你可以告诉 Elasticsearch 仅将其映射为文本字段（这是 5.0 之前的默认行为）：
 
 [source,js]
 --------------------------------------------------
@@ -326,11 +296,9 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-===== Disabled norms
+===== 禁用规范
 
-Norms are index-time scoring factors. If you do not care about scoring, which
-would be the case for instance if you never sort documents by score, you could
-disable the storage of these scoring factors in the index and save some space.
+规范是指数时间评分因子。如果不关心评分，例如，如果从未按分数对文档进行排序，则可以禁用在索引中存储这些评分因子并节省一些空间。
 
 [source,js]
 --------------------------------------------------
@@ -361,17 +329,13 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-The sub `keyword` field appears in this template to be consistent with the
-default rules of dynamic mappings. Of course if you do not need them because
-you don't need to perform exact search or aggregate on this field, you could
-remove it as described in the previous section.
+子 `keyword` 字段出现在此模板中，以与动态映射的默认规则一致。
+当然，如果你不需要它们（因为不需要在此字段上执行精确搜索或聚合），则可以按照上一节中的说明将其删除。
 
-===== Time-series
 
-When doing time series analysis with Elasticsearch, it is common to have many
-numeric fields that you will often aggregate on but never filter on. In such a
-case, you could disable indexing on those fields to save disk space and also
-maybe gain some indexing speed:
+===== 时间序列
+
+使用 Elasticsearch 进行时间序列分析时，通常会有许多数字字段，你可能经常聚合但从不过滤它们。 在这种情况下，可以禁用这些字段的索引以节省磁盘空间，也可以获得一些索引速度：
 
 [source,js]
 --------------------------------------------------
@@ -404,6 +368,5 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> Like the default dynamic mapping rules, doubles are mapped as floats, which
-    are usually accurate enough, yet require half the disk space.
+<1> 与默认的动态映射规则一样，双精度映射为浮点数，浮点数通常足够准确，但需要一半的磁盘空间。
 
