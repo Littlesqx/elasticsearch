@@ -1,64 +1,60 @@
 [[mapping-fields]]
-== Meta-Fields
+== 元字段（Meta-Fields）
 
-Each document has metadata associated with it, such as the `_index`, mapping
-<<mapping-type-field,`_type`>>, and `_id` meta-fields.  The behaviour of some of these meta-fields
-can be customised when a mapping type is created.
+每个文档都有与之关联的元数据，例如 `_index` ，映射 <<mapping-type-field,`_type`>> 和 `_id` 元字段。创建映射类型时，可以自定义某些元字段的行为。
 
 [float]
-=== Identity meta-fields
+=== 身份元字段（Identity meta-fields）
 
 [horizontal]
 <<mapping-index-field,`_index`>>::
 
-    The index to which the document belongs.
+    文档所属的索引。
 
 <<mapping-uid-field,`_uid`>>::
 
-    A composite field consisting of the `_type` and the `_id`.
+    由 `_type` 和 `_id` 组成的复合字段。
 
 <<mapping-type-field,`_type`>>::
 
-    The document's <<mapping-type,mapping type>>.
+    文档的<<mapping-type,映射类型>>。
 
 <<mapping-id-field,`_id`>>::
 
-    The document's ID.
+    文档的 ID。
 
 [float]
 === Document source meta-fields
 
 <<mapping-source-field,`_source`>>::
 
-    The original JSON representing the body of the document.
+    表示文档正文的原始 JSON。
 
 {plugins}/mapper-size.html[`_size`]::
 
-    The size of the `_source` field in bytes, provided by the
-    {plugins}/mapper-size.html[`mapper-size` plugin].
+    `_source` 字段的大小（以字节为单位），由 {plugins}/mapper-size.html [`mapper-size` 插件]提供。
 
 [float]
 === Indexing meta-fields
 
 <<mapping-all-field,`_all`>>::
 
-    A _catch-all_  field that indexes the values of all other fields. Disabled by default.
+    _catch-all_ 字段，用于索引所有其他字段的值。默认情况下禁用。
 
 <<mapping-field-names-field,`_field_names`>>::
 
-    All fields in the document which contain non-null values.
+    文档中包含非空值的所有字段。
 
 <<mapping-ignored-field,`_ignored`>>::
 
-    All fields in the document that have been ignored at index time because of
-    <<ignore-malformed,`ignore_malformed`>>.
+    文档中由于 <<ignore-malformed,`ignore_malformed`>> 而在索引时被忽略的所有字段。
 
 [float]
 === Routing meta-field
 
 <<mapping-routing-field,`_routing`>>::
 
-    A custom routing value which routes a document to a particular shard.
+    自定义路由值，用于将文档路由到特定分片。
 
 [float]
 === Other meta-field
