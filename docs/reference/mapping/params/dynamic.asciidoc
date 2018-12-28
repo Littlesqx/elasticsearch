@@ -1,9 +1,7 @@
 [[dynamic]]
 === `dynamic`
 
-By default, fields can be added _dynamically_ to a document, or to
-<<object,inner objects>> within a document, just by indexing a document
-containing the new field.  For instance:
+默认情况下，只需通过索引包含新字段的文档，即可将字段 _dynamically_ 添加到文档或文档中的 <<object,内部对象>> 。例如：
 
 [source,js]
 --------------------------------------------------
@@ -32,29 +30,21 @@ PUT my_index/_doc/2 <3>
 GET my_index/_mapping <4>
 --------------------------------------------------
 // CONSOLE
-<1> This document introduces the string field `username`, the object field
-    `name`, and two string fields under the `name` object which can be
-    referred to as `name.first` and `name.last`.
-<2> Check the mapping to verify the above.
-<3> This document adds two string fields: `email` and `name.middle`.
-<4> Check the mapping to verify the changes.
+<1> 本文档介绍字符串字段 `username` ，对象字段 `name` ，以及 `name` 对象下的两个字符串字段，可以称为 `name.first`和`name.last` 。
+<2> 检查映射以验证上述情况。
+<3> 该文档添加了两个字符串字段： `email` 和 `name.middle` 。
+<4> 检查映射以验证更改。
 
-The details of how new fields are detected and added to the mapping is explained in <<dynamic-mapping>>.
+有关如何检测新字段并将其添加到映射的详细信息，请参见 <<dynamic-mapping>>。
 
-The `dynamic` setting controls whether new fields can be added dynamically or
-not.  It accepts three settings:
+`dynamic` 设置控制是否可以动态添加新字段。它接受三种设置：
 
 [horizontal]
-`true`::    Newly detected fields are added to the mapping. (default)
-`false`::   Newly detected fields are ignored. These fields will not be indexed so will not be searchable 
-            but will still appear in the `_source` field of returned hits. These fields will not be added 
-            to the mapping,  new fields must be added explicitly.
-`strict`::  If new fields are detected, an exception is thrown and the document is rejected. New fields 
-            must be explicitly added to the mapping.
+`true`::    新检测到的字段将添加到映射中。 （默认）
+`false`::   新检测到的字段将被忽略。这些字段不会被索引，因此无法搜索，但仍会出现在返回匹配的 `_source` 字段中。这些字段不会添加到映射中，必须显式添加新字段。
+`strict`::  如果检测到新字段，则抛出异常并拒绝该文档。必须将新字段显式添加到映射中。
 
-The `dynamic` setting may be set at the mapping type level, and on each
-<<object,inner object>>.  Inner objects inherit the setting from their parent
-object or from the mapping type.  For instance:
+可以在映射类型级别和每个<<object,内部对象>>上设置 `dynamic` 。内部对象从其父对象或映射类型继承该设置。例如：
 
 [source,js]
 --------------------------------------------------
@@ -81,9 +71,8 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> Dynamic mapping is disabled at the type level, so no new top-level fields will be added dynamically.
-<2> The `user` object inherits the type-level setting.
-<3> The `user.social_networks` object enables dynamic mapping, so new fields may be added to this inner object.
+<1> 在类型级别禁用动态映射，因此不会动态添加新的顶级字段。
+<2> `user` 对象继承了类型级别设置。
+<3> `user.social_networks` 对象启用动态映射，因此可以将新字段添加到此内部对象。
 
-TIP: The `dynamic` setting can be updated on existing fields
-using the <<indices-put-mapping,PUT mapping API>>.
+提示：可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上更新 `dynamic` 设置。
