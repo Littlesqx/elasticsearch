@@ -1,15 +1,12 @@
 [[mapping-source-field]]
-=== `_source` field
+=== `_source` 字段
 
-The `_source` field contains the original JSON document body that was passed
-at index time.  The `_source` field itself is not indexed (and thus is not
-searchable), but it is stored so that it can be returned when executing
-_fetch_ requests, like <<docs-get,get>> or <<search-search,search>>.
+`_source` 字段包含在索引时传递的原始JSON文档正文。`_source` 字段本身没有索引（因此不可搜索），但它被存储，以便在执行 _fetch_ requests 时可以返回它，
+如 <<docs-get,get>> 或 <<search-search,search>> 。
 
-==== Disabling the `_source` field
+==== 禁用 `_source` 字段
 
-Though very handy to have around, the source field does incur storage overhead
-within the index. For this reason, it can be disabled as follows:
+虽然非常方便， `_source` 字段确实会在索引中产生存储开销。因此，可以按如下方式禁用它：
 
 [source,js]
 --------------------------------------------------
@@ -27,63 +24,50 @@ PUT tweets
 // CONSOLE
 
 [WARNING]
-.Think before disabling the `_source` field
+.禁用 `_source` 字段前考虑清楚
 ==================================================
 
-Users often disable the `_source` field without thinking about the
-consequences, and then live to regret it.  If the `_source` field isn't
-available then a number of features are not supported:
+用户经常在不考虑后果的情况下禁用 `_source` 字段，然后感到后悔。如果 `_source` 字段不可用，则不支持许多功能：
 
-* The <<docs-update,`update`>>, <<docs-update-by-query,`update_by_query`>>,
-and <<docs-reindex,`reindex`>> APIs.
+* <<docs-update,`update`>> 、 <<docs-update-by-query,`update_by_query`>> 、和 <<docs-reindex,`reindex`>> APIs。
 
-* On the fly <<search-request-highlighting,highlighting>>.
+* 即时生效的 <<search-request-highlighting,highlighting>> 。
 
-* The ability to reindex from one Elasticsearch index to another, either
-  to change mappings or analysis, or to upgrade an index to a new major
-  version.
+* 能够从一个 Elasticsearch 索引重新索引到另一个索引，更改映射或分析，或将索引升级到新的主要版本。
 
-* The ability to debug queries or aggregations by viewing the original
-  document used at index time.
+* 通过查看索引时使用的原始文档来调试查询或聚合的功能。
 
-* Potentially in the future, the ability to repair index corruption
-  automatically.
+* 将来可能会自动修复索引损坏的能力。
+
 ==================================================
 
-TIP: If disk space is a concern, rather increase the
-<<index-codec,compression level>> instead of disabling the `_source`.
+提示：如果需要考虑磁盘空间，请增加 <<index-codec,压缩级别>> ，而不是禁用 `_source` 。
 
-.The metrics use case
+.metric 用例
 **************************************************
 
-The _metrics_ use case is distinct from other time-based or logging use cases
-in that there are many small documents which consist only of numbers, dates,
-or keywords.  There are no updates, no highlighting requests, and the data
-ages quickly so there is no need to reindex.  Search requests typically use
-simple queries to filter the dataset by date or tags, and the results are
-returned as aggregations.
+_metrics_ 用例与其他基于时间或日志记录的用例不同，因为有许多小文档仅包含数字，日期或关键字。
+没有更新，没有突出显示请求，数据快速老化，因此无需重新编制索引。搜索请求通常使用简单查询按日期或标记过滤数据集，结果将作为聚合返回。
 
-In this case, disabling the `_source` field will save space and reduce I/O.
-It is also advisable to disable the <<mapping-all-field,`_all` field>> in the
-metrics case.
+在这种情况下，禁用 `_source` 字段将节省空间并减少 I/O。建议在 metrics 用例下禁用 <<mapping-all-field,`_all` 字段>>。
 
 **************************************************
 
 
 [[include-exclude]]
-==== Including / Excluding fields from `_source`
+==== 包括/排除 `_source` 中的字段
 
-An expert-only feature is the ability to prune the contents of the `_source`
-field after the document has been indexed, but before the `_source` field is
-stored.
+仅限专家的功能是能够在索引文档之后但在存储 `_source` 字段之前修剪 `_source` 字段的内容。
 
 WARNING: Removing fields from the `_source` has similar downsides to disabling
 `_source`, especially the fact that you cannot reindex documents from one
 Elasticsearch index to another. Consider using
 <<search-request-source-filtering,source filtering>> instead.
 
-The `includes`/`excludes` parameters (which also accept wildcards) can be used
-as follows:
+警告：从 `_source` 中删除字段与禁用 `_source` 有类似的缺点，尤其是无法将文档从一个 Elasticsearch 索引重新索引到另一个 Elasticsearch 索引。
+请考虑使用 <<search-request-source-filtering,source filtering>> 。
+
+`includes`/`excludes` 参数（也接受通配符） (which also accept wildcards) 可以如下使用：
 
 [source,js]
 --------------------------------------------------
@@ -132,5 +116,5 @@ GET logs/_search
 --------------------------------------------------
 // CONSOLE
 
-<1> These fields will be removed from the stored `_source` field.
-<2> We can still search on this field, even though it is not in the stored `_source`.
+<1> 这些字段将从存储的 `_source` 字段中删除。
+<2> 我们仍然可以搜索这个字段，即使它不在存储的 `_source` 中。
