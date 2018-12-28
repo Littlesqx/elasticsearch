@@ -1,9 +1,7 @@
 [[mapping-meta-field]]
-=== `_meta` field
+=== `_meta` 字段
 
-A mapping type can have custom meta data associated with it. These are not
-used at all by Elasticsearch, but can be used to store application-specific
-metadata, such as the class that a document belongs to:
+映射类型可以具有与之关联的自定义元数据。Elasticsearch 根本不使用它们，但可以用于存储特定于应用程序的元数据，例如文档所属的类：
 
 [source,js]
 --------------------------------------------------
@@ -23,8 +21,6 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> This `_meta` info can be retrieved with the
-    <<indices-get-mapping,GET mapping>> API.
+<1> 可以使用 <<indices-get-mapping,GET mapping>> API 纠正 `_meta` 信息。
 
-The `_meta` field can be updated on an existing type using the
-<<indices-put-mapping,PUT mapping>> API.
+可以使用 <<indices-put-mapping,PUT mapping>> API 在现有类型上更新 `_meta` 字段。
