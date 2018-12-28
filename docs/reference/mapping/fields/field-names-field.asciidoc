@@ -1,23 +1,16 @@
 [[mapping-field-names-field]]
-=== `_field_names` field
+=== `_field_names` 字段
 
-The `_field_names` field used to index the names of every field in a document that
-contains any value other than `null`.  This field was used by the
-<<query-dsl-exists-query,`exists`>> query to find documents that
-either have or don't have any non-+null+ value for a particular field.
+`_field_names` 字段用于索引文档中包含除 `null` 以外的任何值的每个字段的名称。
+<<query-dsl-exists-query,`exists`>> 查询使用此字段来查找具有或不具有特定字段的任何非 +null+ 值的文档。
 
-Now the `_field_names` field only indexes the names of fields that have
-`doc_values` and `norms` disabled. For fields which have either `doc_values`
-or `norm` enabled the <<query-dsl-exists-query,`exists`>> query will still
-be available but will not use the `_field_names` field.
+现在 `_field_names` 字段仅索引已禁用 `doc_values` 和 `norms` 的字段的名称。
+对于启用了 `doc_values` 或 `norm` 的字段， <<query-dsl-exists-query,`exists`>> 查询仍然可用，但不会使用 `_field_names` 字段。
 
-==== Disabling `_field_names`
+==== 禁用 `_field_names`
 
-Disabling `_field_names` is often not necessary because it no longer
-carries the index overhead it once did. If you have a lot of fields
-which have `doc_values` and `norms` disabled and you do not need to
-execute `exists` queries using those fields you might want to disable
-`_field_names` be adding the following to the mappings:
+禁用 `_field_names` 通常不是必需的，因为它不再承载曾经做过的索引开销。
+你如果有很多字段禁用了 `doc_values` 和 `norms` ，并且不需要使用那些字段执行 `exists` 查询，那可能想要禁用 `_field_names` 将以下内容添加到映射中：
 
 [source,js]
 --------------------------------------------------
