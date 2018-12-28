@@ -1,7 +1,7 @@
 [[mapping-type-field]]
 === `_type` 字段
 
-弃用[6.0.0,See <<removal-of-types>>]
+弃用[6.0.0,参见 <<removal-of-types>>]
 
 索引的每个文档都与 <<mapping-type-field,`_type`>> （参见 <<mapping-type>> ）和 <<mapping-id-field,`_id`>> 相关联。索引 `_type` 字段以便快速按类型名称进行搜索。
 
