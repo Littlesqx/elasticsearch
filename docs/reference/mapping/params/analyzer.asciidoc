@@ -17,7 +17,7 @@ Elasticsearch 附带了许多<<analysis-analyzers,预定义分析器>>，无需�
 * 为 `default` 的分析器。
 * <<analysis-standard-analyzer,`standard`>> 分析器。
 
-At query time, there are a few more layers:
+查询的时候，有多个层次：
 
 * <<full-text-queries,全文搜索>>中定义的分析器。
 * 映射字段中定义的 `search_analyzer` 。 
