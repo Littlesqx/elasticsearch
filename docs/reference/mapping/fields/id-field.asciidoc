@@ -1,16 +1,11 @@
 [[mapping-id-field]]
-=== `_id` field
+=== `_id` 字段
 
-Each document has an `_id` that uniquely identifies it, which is indexed
-so that documents can be looked up either with the <<docs-get,GET API>> or the
-<<query-dsl-ids-query,`ids` query>>.
+每个文档都有一个唯一标识它的 `_id` ，它被编入索引，以便可以使用 <<docs-get，GET API>> 或 <<query-dsl-ids-query,`ids` 查询>>。
 
-NOTE: This was not the case with pre-6.0 indices due to the fact that they
-supported multiple types, so the `_type` and `_id` were merged into a composite
-primary key called `_uid`.
+注意：这不是 6.0 之前索引的情况，因为它们支持多种类型，因此 `_type` 和 `_id` 被合并到一个名为 `_uid` 的复合主键中。
 
-The value of the `_id` field is accessible in certain queries (`term`,
-`terms`, `match`, `query_string`, `simple_query_string`).
+在某些查询中可以访问 `_id` 字段的值（ `term` 、 `terms` 、 `match` 、 `query_string` 、 `simple_query_string` ）。
 
 [source,js]
 --------------------------
@@ -36,10 +31,7 @@ GET my_index/_search
 --------------------------
 // CONSOLE
 
-<1> Querying on the `_id` field (also see the <<query-dsl-ids-query,`ids` query>>)
+<1> 在 `_id` 字段上查询（也可以参考 <<query-dsl-ids-query,`ids` 查询>>）
 
-The value of the `_id` field is also accessible in aggregations or for sorting,
-but doing so is discouraged as it requires to load a lot of data in memory. In
-case sorting or aggregating on the `_id` field is required, it is advised to
-duplicate the content of the `_id` field in another field that has `doc_values`
-enabled.
+`_id` 字段的值也可以在聚合中进行访问或用于排序，但不鼓励这样做，因为它需要在内存中加载大量数据。
+如果需要在 `_id` 字段上进行排序或聚合，建议在启用了 `doc_values` 的另一个字段中复制 `_id` 字段的内容。
