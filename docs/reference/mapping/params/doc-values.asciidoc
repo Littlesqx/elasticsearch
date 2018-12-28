@@ -1,25 +1,14 @@
 [[doc-values]]
 === `doc_values`
 
-Most fields are <<mapping-index,indexed>> by default, which makes them
-searchable. The inverted index allows queries to look up the search term in
-unique sorted list of terms, and from that immediately have access to the list
-of documents that contain the term.
+大多数字段默认<<mapping-index,被索引>>，这使它们可以搜索。反向索引允许查询在唯一排序的词条（term）列表中查找搜索词条（term），并且从中可以立即访问包含该词条（term）的文档列表。
 
-Sorting, aggregations, and access to field values in scripts requires a
-different data access pattern.  Instead of looking up the term and finding
-documents, we need to be able to look up the document and find the terms that
-it has in a field.
+排序、聚合和访问脚本中的字段值需要不同的数据访问模式。我们需要能够查询文档并找到字段中的词条，而不是查找词条和查找文档。
 
-Doc values are the on-disk data structure, built at document index time, which
-makes this data access pattern possible. They store the same values as the
-`_source` but in a column-oriented fashion that is way more efficient for
-sorting and aggregations. Doc values are supported on almost all field types,
-with the __notable exception of `analyzed` string fields__.
+Doc 值是磁盘上的数据结构，在文档索引时构建，这使得这种数据访问模式成为可能。
+它们存储与 `_source` 相同的值，但是是以列为导向的方式，这样对于排序和聚合更有效。几乎所有字段类型都支持 Doc 值， __ `analyze` 字符串字段是值得注意的例外__。
 
-All fields which support doc values have them enabled by default. If you are
-sure that you don't need to sort or aggregate on a field, or access the field
-value from a script, you can disable doc values in order to save disk space:
+支持 doc 值的所有字段都默认启用它们。如果你确定不需要对字段进行排序或聚合，或者从脚本访问字段值，则可以禁用 doc 值以节省磁盘空间：
 
 [source,js]
 --------------------------------------------------
@@ -41,6 +30,6 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `status_code` field has `doc_values` enabled by default.
-<2> The `session_id` has `doc_values` disabled, but can still be queried.
+<1> `status_code` 字段默认启用 `doc_values` 。
+<2> `session_id` 已禁用 `doc_values` ，但仍可查询。
 
