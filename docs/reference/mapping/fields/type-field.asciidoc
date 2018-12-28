@@ -1,14 +1,12 @@
 [[mapping-type-field]]
-=== `_type` field
+=== `_type` 字段
 
-deprecated[6.0.0,See <<removal-of-types>>]
+弃用[6.0.0,See <<removal-of-types>>]
 
-Each document indexed is associated with a <<mapping-type-field,`_type`>> (see
-<<mapping-type>>) and an <<mapping-id-field,`_id`>>.  The `_type` field is
-indexed in order to make searching by type name fast.
+索引的每个文档都与 <<mapping-type-field,`_type`>> （参见 <<mapping-type>> ）和 <<mapping-id-field,`_id`>> 相关联。索引 `_type` 字段以便快速按类型名称进行搜索。
 
-The value of the `_type` field is accessible in queries, aggregations,
-scripts, and when sorting:
+ 
+可以在查询、聚合、脚本和排序时访问 `_type`字段的值：
 
 [source,js]
 --------------------------
@@ -54,8 +52,8 @@ GET my_index/_search
 --------------------------
 // CONSOLE
 
-<1> Querying on the `_type` field
-<2> Aggregating on the `_type` field
-<3> Sorting on the `_type` field
-<4> Accessing the `_type` field in scripts
+<1> 在 `_type` 字段上查询。
+<2> 在 `_type` 字段上聚合。
+<3> 在 `_type` 字段上聚合。
+<4> 在脚本中访问 `_type` 字段。
 
