@@ -1,11 +1,8 @@
 [[copy-to]]
 === `copy_to`
 
-The `copy_to` parameter allows you to create custom
-<<mapping-all-field,`_all`>> fields.  In other words, the values of multiple
-fields can be copied into a group field, which can then be queried as a single
-field.  For instance, the `first_name` and `last_name` fields can be copied to
-the `full_name` field as follows:
+`copy_to` 参数允许你创建自定义的 <<mapping-all-field,`_all`>> 字段。换句话说，可以将多个字段的值复制到组字段中，然后可以将其作为单个字段进行查询。
+例如，可以将 `first_name` 和 `last_name` 字段复制到 `full_name` 字段，如下所示：
 
 [source,js]
 --------------------------------------------------
@@ -50,15 +47,13 @@ GET my_index/_search
 
 --------------------------------------------------
 // CONSOLE
-<1>  The values of the `first_name` and `last_name` fields are copied to the
-     `full_name` field.
 
-<2>  The `first_name` and `last_name` fields can still be queried for the
-     first name and last name respectively, but the `full_name` field can be
-     queried for both first and last names.
+<1> `first_name` 和 `last_name` 字段的值被复制到 `full_name` 字段。     
 
-Some important points:
+<2> 仍然可以分别查询第一个名称和姓氏的 `first_name` 和 `last_name` 字段，但 `full_name` 字段可以同时用于查询名字和姓氏。     
 
-* It is the field _value_ which is copied, not the terms (which result from the analysis process).
-* The original <<mapping-source-field,`_source`>> field will not be modified to show the copied values.
-* The same value can be copied to multiple fields, with `"copy_to": [ "field_1", "field_2" ]`
+一些要点：
+
+* 它是复制的字段 _value_ ，而不是条件（由分析过程产生的）。
+* 原始的 <<mapping-source-field,`_source`>> 字段不会被修改以显示复制的值。
+* 可以将相同的值复制到多个字段，通过 `"copy_to": [ "field_1", "field_2" ]` 。
