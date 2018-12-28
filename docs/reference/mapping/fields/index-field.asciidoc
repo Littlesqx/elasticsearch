@@ -1,17 +1,11 @@
 [[mapping-index-field]]
-=== `_index` field
+=== `_index` 字段
 
-When performing queries across multiple indexes, it is sometimes desirable to
-add query clauses that are associated with documents of only certain indexes.
-The `_index` field allows matching on the index a document was indexed into.
-Its value is accessible in `term`, or `terms` queries, aggregations,
-scripts, and when sorting:
+在跨多个索引执行查询时，有时需要添加与仅某些索引的文档关联的查询子句。`_index` 字段允许匹配索引文档的索引。它的值可以在 `term` 或 `terms` 查询、聚合、脚本和排序时访问：
 
-NOTE: The `_index` is exposed as a virtual field -- it is not added to the
-Lucene index as a real field.  This means that you can use the `_index` field
-in a `term` or `terms` query (or any query that is rewritten to a `term`
-query, such as the `match`,  `query_string` or `simple_query_string` query),
-but it does not support `prefix`, `wildcard`, `regexp`, or `fuzzy` queries.
+注意： `_index` 作为虚拟字段公开——它不作为真实字段添加到 Lucene 索引中。
+这意味着可以在 `term` 或 `terms` 查询中使用 `_index` 字段（或任何重写为 `term` 查询的查询，
+例如 `match` 、 `query_string` 或 `simple_query_string` 查询），但它不支持 `prefix` 、 `wildcard` 、 `regexp` 或 `fuzzy` 查询。
 
 [source,js]
 --------------------------
@@ -60,7 +54,7 @@ GET index_1,index_2/_search
 --------------------------
 // CONSOLE
 
-<1> Querying on the `_index` field
-<2> Aggregating on the `_index` field
-<3> Sorting on the `_index` field
-<4> Accessing the `_index` field in scripts
+<1> 在 `_index` 字段上查询。
+<2> 在 `_index` 字段上聚合。
+<3> 在 `_index` 字段上排序。
+<4> 在脚本中访问 `_index` 字段。
