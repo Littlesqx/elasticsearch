@@ -1,15 +1,13 @@
 [[mapping-routing-field]]
-=== `_routing` field
+=== `_routing` 字段
 
-A document is routed to a particular shard in an index using the following
-formula:
+使用以下公式将文档路由到索引中的特定分片：
 
     shard_num = hash(_routing) % num_primary_shards
 
-The default value used for `_routing` is the document's <<mapping-id-field,`_id`>>.
+用于 `_routing` 的默认值是文档的 <<mapping-id-field,`_id`>> 。
 
-Custom routing patterns can be implemented by specifying a custom `routing`
-value per document.  For instance:
+可以通过为每个文档指定自定义 `routing` 值来实现自定义路由模式。例如：
 
 [source,js]
 ------------------------------
@@ -23,12 +21,10 @@ GET my_index/_doc/1?routing=user1 <2>
 // CONSOLE
 // TESTSETUP
 
-<1> This document uses `user1` as its routing value, instead of its ID.
-<2> The same `routing` value needs to be provided when
-    <<docs-get,getting>>, <<docs-delete,deleting>>, or <<docs-update,updating>>
-    the document.
+<1> 本文档使用 `user1` 作为其路由值，而不是其 ID。
+<2> 当 <<docs-get,获取>>、<<docs-delete,删除>>或<<docs-update,更新>>文档时，需要提供相同的 `routing` 值。    
 
-The value of the `_routing` field is accessible in queries:
+可以在查询中访问 `_routing` 字段的值：
 
 [source,js]
 --------------------------
@@ -43,13 +39,11 @@ GET my_index/_search
 --------------------------
 // CONSOLE
 
-<1> Querying on the `_routing` field (also see the <<query-dsl-ids-query,`ids` query>>)
+<1> 查询 `_routing` 字段（另见 <<query-dsl-ids-query,`ids` 查询>>）
 
 ==== Searching with custom routing
 
-Custom routing can reduce the impact of searches.  Instead of having to fan
-out a search request to all the shards in an index, the request can be sent to
-just the shard that matches the specific routing value (or values):
+自定义路由可以减少搜索的影响。将搜索请求发送到与特定路由值（或多个值）匹配的分片，而不是发散到索引中的所有分片：
 
 [source,js]
 ------------------------------
@@ -64,18 +58,16 @@ GET my_index/_search?routing=user1,user2 <1>
 ------------------------------
 // CONSOLE
 
-<1> This search request will only be executed on the shards associated with the `user1` and `user2` routing values.
+<1> 此搜索请求仅在与 `user1` 和 `user2` 路由值关联的分片上执行。
 
 
-==== Making a routing value required
+==== 需要设置路由值
 
-When using custom routing, it is important to provide the routing value
-whenever <<docs-index_,indexing>>, <<docs-get,getting>>,
 <<docs-delete,deleting>>, or <<docs-update,updating>> a document.
 
-Forgetting the routing value can lead to a document being indexed on more than
-one shard.  As a safeguard, the `_routing` field can be configured to make a
-custom `routing` value required for all CRUD operations:
+使用自定义路由时，每当<<docs-index_,索引>>、<<docs-get,获取>>、<<docs-delete,删除>>或<<docs-update,更新>>文档时提供路由值是很重要。
+
+忘记路由值可能导致文档被索引到多个分片上。作为安全措施，可以将 `_routing` 字段配置为使所有 CRUD 操作都需要自定义 `routing` 值：
 
 [source,js]
 ------------------------------
@@ -97,40 +89,31 @@ PUT my_index2/_doc/1 <2>
 ------------------------------
 // CONSOLE
 // TEST[catch:bad_request]
-<1> Routing is required for `_doc` documents.
-<2> This index request throws a `routing_missing_exception`.
+<1> `_doc` 文档需要路由。
+<2> 该索引请求抛出 `routing_missing_exception` 。
 
-==== Unique IDs with custom routing
+==== 具有自定义路由的唯一 IDs
 
-When indexing documents specifying a custom `_routing`, the uniqueness of the
-`_id` is not guaranteed across all of the shards in the index. In fact,
-documents with the same `_id` might end up on different shards if indexed with
-different `_routing` values.
+索引指定自定义 `_routing` 的文档时，索引中所有分片都无法保证 `_id` 的唯一性。
+实际上，如果使用不同的 `_routing` 值索引，具有相同 `_id` 的文档可能最终会出现在不同的分片上。
 
-It is up to the user to ensure that IDs are unique across the index.
+用户应确保 ID 在索引中是唯一的。
 
 [[routing-index-partition]]
-==== Routing to an index partition
+==== 路由到索引分区
 
-An index can be configured such that custom routing values will go to a subset of the shards rather
-than a single shard. This helps mitigate the risk of ending up with an imbalanced cluster while still
-reducing the impact of searches.
+可以配置索引，使得自定义路由值将转到分片的子集而不是单个分片。这有助于降低结束不平衡群集的风险，同时仍然可以减少搜索的影响。
 
-This is done by providing the index level setting <<routing-partition-size,`index.routing_partition_size`>> at index creation.
-As the partition size increases, the more evenly distributed the data will become at the
-expense of having to search more shards per request.
+这是通过在索引创建时提供索引级别设置 <<routing-partition-size,`index.routing_partition_size`>> 来完成的。
+随着分区大小的增加，数据分布越均匀，代价是每个请求必须搜索更多分片。
 
-When this setting is present, the formula for calculating the shard becomes:
+当此设置存在时，计算分片的公式变为：
 
     shard_num = (hash(_routing) + hash(_id) % routing_partition_size) % num_primary_shards
 
-That is, the `_routing` field is used to calculate a set of shards within the index and then the
-`_id` is used to pick a shard within that set.
+也就是说， `_routing` 字段用于计算索引中的一组分片，然后 `_id` 用于选择该集合中的分片。
 
-To enable this feature, the `index.routing_partition_size` should have a value greater than 1 and
-less than `index.number_of_shards`.
+要启用此功能， `index.routing_partition_size` 的值应大于1且小于 `index.number_of_shards` 。
 
-Once enabled, the partitioned index will have the following limitations:
-
-*   Mappings with <<parent-join,`join` field>> relationships cannot be created within it.
-*   All mappings within the index must have the `_routing` field marked as required.
+*   无法在其中创建具有 <<parent-join,`join` 字段>>关系的映射。
+*   索引中的所有映射都必须将 `_routing` 字段标记为必需。
