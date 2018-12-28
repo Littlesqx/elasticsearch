@@ -1,8 +1,7 @@
 [[mapping-boost]]
 === `boost`
 
-Individual fields can be _boosted_ automatically -- count more towards the relevance score
--- at query time, with the `boost` parameter as follows:
+单个字段可以自动_boosted_——在查询时更多地计入相关性分数，使用 `boost` 参数，如下所示：
 
 [source,js]
 --------------------------------------------------
@@ -25,12 +24,11 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-<1> Matches on the `title` field will have twice the weight as those on the
-    `content` field, which has the default `boost` of `1.0`.
+<1> `title` 字段上的匹配将具有两倍于`content`字段的匹配，其具有默认的 `boost` 为 `1.0` 。
 
-NOTE: The boost is applied only for term queries (prefix, range and fuzzy queries are not _boosted_).
+注意：提升仅适用于 term 查询（前缀、范围和模糊查询不是_boosted_）。
 
-You can achieve the same effect by using the boost parameter directly in the query, for instance the following query (with field time boost):
+你可以通过在查询中直接使用 boost 参数来实现相同的效果，例如以下查询（使用字段时间 boost）：
 
 [source,js]
 --------------------------------------------------
@@ -47,7 +45,7 @@ POST _search
 --------------------------------------------------
 // CONSOLE
 
-is equivalent to:
+等价于：
 
 [source,js]
 --------------------------------------------------
@@ -65,29 +63,19 @@ POST _search
 --------------------------------------------------
 // CONSOLE
 
+使用 <<mapping-all-field,`_all`>> 字段中的值复制时，也会应用 boost。这意味着，当查询 `_all` 字段时，源自 `title` 字段的单词的得分将高于源自`content`字段的单词。此功能需要付出代价：使用字段 boost 时， `_all` 字段上的查询速度会变慢。
 
-The boost is also applied when it is copied with the
-value in the <<mapping-all-field,`_all`>> field. This means that, when
-querying the `_all` field, words that originated from the `title` field will
-have a higher score than words that originated in the `content` field.
-This functionality comes at a cost: queries on the `_all` field are slower
-when field boosting is used.
-
-deprecated[5.0.0, index time boost is deprecated.  Instead, the field mapping boost is applied at query time. For indices created before 5.0.0 the boost will still be applied at index time.]
+弃用[5.0.0, 不推荐使用索引时间 boost。相反，字段映射 boost 在查询时应用。对于在 5.0.0 之前创建的索引，仍将在索引时应用。]
 [WARNING]
-.Why index time boosting is a bad idea
+.为什么 索引时间 boosting 是一个坏主意
 ==================================================
 
-We advise against using index time boosting for the following reasons:
+我们建议不要使用索引时间 boosting，原因如下：
 
-* You cannot change index-time `boost` values without reindexing all of your
-  documents.
+* 如果不重新索引所有文档，则无法更改索引时间的 `boost` 值。
 
-* Every query supports query-time boosting which achieves the same effect. The
-  difference is that you can tweak the `boost` value without having to reindex.
+* 每个查询都支持查询时间 boosting，从而实现相同的效果。不同之处在于无需重新索引即可调整 `boost` 值。
 
-* Index-time boosts are stored as part of the <<norms,`norm`>>, which is only one
-  byte.  This reduces the resolution of the field length normalization factor
-  which can lead to lower quality relevance calculations.
+* 索引时间增强存储为 <<norms,`norm`>> 的一部分，它只有一个字节。这降低了场长归一化因子的分辨率，这可能导致较低质量的相关性计算。
 
 ==================================================
