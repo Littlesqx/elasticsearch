@@ -1,14 +1,11 @@
 [[mapping-uid-field]]
-=== `_uid` field
+=== `_uid` 字段
 
-deprecated[6.0.0, Now that types have been removed, documents are uniquely identified by their `_id` and the `_uid` field has only been kept as a view over the `_id` field for backward compatibility.]
+弃用[6.0.0, 现在已经删除了类型，文档由它们的 `_id` 唯一标识，并且 `_uid` 字段仅作为 `_id` 字段的视图保存，以便向后兼容。]
 
-Each document indexed is associated with a <<mapping-type-field,`_type`>> (see
-<<mapping-type>>) and an <<mapping-id-field,`_id`>>.  These values are
-combined as `{type}#{id}` and indexed as the `_uid` field.
+索引的每个文档都与 <<mapping-type-field,`_type`>> （参见 <<mapping-type>> ）和 <<mapping-id-field,`_id`>> 相关联。这些值组合为 `{type}＃{id}` 并索引为 `_uid` 字段。
 
-The value of the `_uid` field is accessible in queries, aggregations, scripts,
-and when sorting:
+可以在查询、聚合、脚本和排序时访问 `_uid` 字段的值：
 
 [source,js]
 --------------------------
@@ -63,7 +60,7 @@ GET my_index/_search
 // TEST[continued]
 // TEST[warning:Fielddata access on the _uid field is deprecated, use _id instead]
 
-<1> Querying on the `_uid` field (also see the <<query-dsl-ids-query,`ids` query>>)
-<2> Aggregating on the `_uid` field
-<3> Sorting on the `_uid` field
-<4> Accessing the `_uid` field in scripts
+<1> 在 `_uid` 字段上查询（也可以参见 <<query-dsl-ids-query,`ids` 查询>>）
+<2> 在 `_uid` 字段上聚合。
+<3> 在`_uid` 字段上排序。
+<4> 在脚本中访问 `_uid` 。
