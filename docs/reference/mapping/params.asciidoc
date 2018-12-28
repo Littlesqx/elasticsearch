@@ -1,11 +1,10 @@
 [[mapping-params]]
-== Mapping parameters
+== 映射参数
 
-The following pages provide detailed explanations of the various mapping
-parameters that are used by <<mapping-types,field mappings>>:
+以下页面提供了 <<mapping-types,字段映射>> 使用的各种映射参数的详细说明：
 
 
-The following mapping parameters are common to some or all field datatypes:
+以下映射参数对于某些或所有字段数据类型是通用的：
 
 * <<analyzer,`analyzer`>>
 * <<normalizer, `normalizer`>>
