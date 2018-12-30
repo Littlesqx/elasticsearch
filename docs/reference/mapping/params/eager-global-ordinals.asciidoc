@@ -1,38 +1,17 @@
 [[eager-global-ordinals]]
 === `eager_global_ordinals`
 
-Global ordinals is a data-structure on top of doc values, that maintains an
-incremental numbering for each unique term in a lexicographic order. Each
-term has a unique number and the number of term 'A' is lower than the
-number of term 'B'. Global ordinals are only supported with
-<<keyword,`keyword`>> and <<text,`text`>> fields. In `keyword` fields, they
-are available by default but `text` fields can only use them when `fielddata`,
-with all of its associated baggage, is enabled.
+全局序数是 doc 值之上的数据结构，它维护字典顺序中每个唯一词项（term）的增量编号。每个词项（term）都有一个唯一的数字，词项（term）“A”的数量低于词项（term）“B”的数量。
+全局序数仅受 <<keyword,`keyword`>> 和 <<text,`text`>> 字段的支持。在 `keyword` 字段中，它们默认可用，但 `text` 字段只能在 `fielddata` 及其所有相关包裹启用时使用它们。
 
-Doc values (and fielddata) also have ordinals, which is a unique numbering for
-all terms in a particular segment and field. Global ordinals just build on top
-of this, by providing a mapping between the segment ordinals and the global
-ordinals, the latter being unique across the entire shard. Given that global
-ordinals for a specific field are tied to _all the segments of a shard_, they
-need to be entirely rebuilt whenever a once new segment becomes visible.
+Doc 值（和 fielddata）也有序数，这是特定的段（segment）和字段中所有词项（term）的唯一编号。通过提供段（segment）序数和全局序数之间的映射，全局序数建立在此之上，后者在整个分片中是唯一的。
+鉴于特定字段的全局序数与所有 shard_ 的段（segment）相关联，只要一个新段（segment）可见，就需要完全重建它们。
 
-Global ordinals are used for features that use segment ordinals, such as
-the <<search-aggregations-bucket-terms-aggregation,`terms` aggregation>>,
-to improve the execution time. A terms aggregation relies purely on global
-ordinals to perform the aggregation at the shard level, then converts global
-ordinals to the real term only for the final reduce phase, which combines
-results from different shards.
+全局序数用于使用段（segment）序数的功能，例如 <<search-aggregations-bucket-terms-aggregation,`terms` 聚合>>，以改善执行时间。
+词项（term）聚合完全依赖于全局序数来在分片级别执行聚合，然后仅将最终减少阶段的全局序数转换为实际术语，其结合来自不同分片的结果。
+全局序数的加载时间取决于字段中的词项（term）数，但通常它很低，因为源字段数据已经加载了。全局序数的内存开销很小，因为它被非常有效地压缩了。
 
-The loading time of global ordinals depends on the number of terms in a field,
-but in general it is low, since it source field data has already been loaded.
-The memory overhead of global ordinals is a small because it is very
-efficiently compressed.
-
-By default, global ordinals are loaded at search-time, which is the right
-trade-off if you are optimizing for indexing speed. However, if you are more
-interested in search speed, it could be interesting to set
-`eager_global_ordinals: true` on fields that you plan to use in terms
-aggregations:
+默认情况下，全局序数在搜索时加载，如果你正在优化索引速度，这是正确的权衡。但是，如果你对搜索速度更感兴趣，那么在计划用于聚合词项（term）的字段上设置 `eager_global_ordinals：true` 会很有趣：
 
 [source,js]
 ------------
@@ -49,13 +28,9 @@ PUT my_index/_mapping/_doc
 // CONSOLE
 // TEST[s/^/PUT my_index\n/]
 
-This will shift the cost from search-time to refresh-time. Elasticsearch will
-make sure that global ordinals are built before publishing updates to the
-content of the index.
+这会将成本从搜索时间转移到刷新时间。Elasticsearch 将确保在发布索引内容的更新之前构建全局序数。
 
-If you ever decide that you do not need to run `terms` aggregations on this
-field anymore, then you can disable eager loading of global ordinals at any
-time:
+你如果决定不再需要在此字段上运行 `terms` 聚合，那么可以随时禁用 `eager_global_ordinals`：
 
 [source,js]
 ------------
