@@ -1,17 +1,17 @@
 [[enabled]]
 === `enabled`
 
-Elasticsearch tries to index all of the fields you give it, but sometimes you
-want to just store the field without indexing it.  For instance, imagine that
-you are using Elasticsearch as a web session store.  You may want to index the
-session ID and last update time, but you don't need to query or run
-aggregations on the session data itself.
+Elasticsearch 尝试索引你提供的所有字段，但有时只想存储字段而不对其进行索引。例如，假设你使用 Elasticsearch 作为 Web 会话存储。
+你可能希望索引会话 ID 和上次的更新时间，但不需要在会话数据本身上查询或运行聚合。
 
 The `enabled` setting, which can be applied only to the mapping type and to
 <<object,`object`>> fields, causes Elasticsearch to skip parsing of the
 contents of the field entirely.  The JSON can still be retrieved from the
 <<mapping-source-field,`_source`>> field, but it is not searchable or stored
 in any other way:
+
+`enabled` 设置只能应用于映射类型和 <<object,`object`>> 字段，导致 Elasticsearch 完全跳过对字段内容的解析。
+仍然可以从 <<mapping-source-field,`_source`>> 字段中检索 JSON，但它不可搜索或存储以任何其他方式：
 
 [source,js]
 --------------------------------------------------
@@ -53,13 +53,11 @@ PUT my_index/_doc/session_2
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `session_data` field is disabled.
-<2> Any arbitrary data can be passed to the `session_data` field as it will be entirely ignored.
-<3> The `session_data` will also ignore values that are not JSON objects.
+<1> `session_data` 字段被禁用。
+<2> 任意数据都可以传递给 `session_data` 字段，因为它将被完全忽略。
+<3> `session_data` 也将忽略不是 JSON 对象的值。
 
-The entire mapping type may be disabled as well, in which case the document is
-stored in the <<mapping-source-field,`_source`>> field, which means it can be
-retrieved, but none of its contents are indexed in any way:
+整个映射类型也可以被禁用，在这种情况下，文档存储在 <<mapping-source-field，`_source`>> 字段中，这意味着它可以被检索，但是它的所有内容都没有被以任何方式索引：
 
 [source,js]
 --------------------------------------------------
@@ -88,10 +86,9 @@ GET my_index/_doc/session_1 <2>
 GET my_index/_mapping <3>
 --------------------------------------------------
 // CONSOLE
-<1> The entire `_doc` mapping type is disabled.
-<2> The document can be retrieved.
-<3> Checking the mapping reveals that no fields have been added.
+<1> 整个 `_doc` 映射类型被禁用。
+<2> 可以检索该文档。
+<3> 检查映射以展示没有添加任何字段。
 
-TIP: The `enabled` setting can be updated on existing fields
-using the <<indices-put-mapping,PUT mapping API>>.
+提示：可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上更新 `enabled` 设置。
 
