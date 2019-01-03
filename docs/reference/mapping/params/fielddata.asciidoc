@@ -1,57 +1,35 @@
 [[fielddata]]
 === `fielddata`
 
-Most fields are <<mapping-index,indexed>> by default, which makes them
-searchable. Sorting, aggregations, and accessing field values in scripts,
-however, requires a different access pattern from search.
+大多数字段默认被<<mapping-index,索引>>，这使得它们可以被搜索。但是，对脚本中的字段值进行排序、聚合和访问需要使用不同的搜索访问模式。
 
-Search needs to answer the question _"Which documents contain this term?"_,
-while sorting and aggregations need to answer a different question: _"What is
-the value of this field for **this** document?"_.
+搜索需要回答问题__“哪个文档包含这个词条？”__，而排序和聚合需要回答一个不同的问题：__“**这个**文档的这个字段的值是多少？”__。
 
-Most fields can use index-time, on-disk <<doc-values,`doc_values`>> for this
-data access pattern, but <<text,`text`>> fields do not support `doc_values`.
+对于该数据访问模式，大多数字段可以使用 index-time，磁盘上的 <<doc-values，`doc_values`>> ，但 <<text,`text`>> 字段不支持 `doc_values` 。
 
-Instead, `text` fields use a query-time *in-memory* data structure called
-`fielddata`.  This data structure is built on demand the first time that a
-field is used for aggregations, sorting, or in a script.  It is built by
-reading the entire inverted index for each segment from disk, inverting the
-term ↔︎ document relationship, and storing the result in memory, in the JVM
-heap.
+相反， `text` 字段使用名为 `fielddata` 的 query-time **内存上**的数据结构。第一次将字段用于聚合、排序或或在脚本，此数据结构是根据需要构建的。
+它是通过从磁盘读取每个段（segment）的整个反向索引，反转术语↔︎文档关系，并将结果存储在内存中的 JVM 堆中构建的。
 
-==== Fielddata is disabled on `text` fields by default
+==== 默认情况下，在 `text` 字段上禁用 Fielddata
 
-Fielddata can consume a *lot* of heap space, especially when loading high
-cardinality `text` fields.  Once fielddata has been loaded into the heap, it
-remains there for the lifetime of the segment. Also, loading fielddata is an
-expensive process which can cause users to experience latency hits.  This is
-why fielddata is disabled by default.
+Fielddata 可以占用**很多**堆空间，特别是在加载高基数 `text` 字段时。一旦 fielddata 已加载到堆中，它将在该段的生命周期内保留。
+此外，加载 fielddata 是一个昂贵的过程，可能会导致用户遇到延迟命中。这就是默认情况下禁用 fielddata 的原因。
 
-If you try to sort, aggregate, or access values from a script on a `text`
-field, you will see this exception:
+如果你尝试从 `text` 字段上的脚本中排序、聚合或访问值，你将看到以下异常：
 
 [quote]
 --
-Fielddata is disabled on text fields by default.  Set `fielddata=true` on
-[`your_field_name`] in order to load  fielddata in memory by uninverting the
-inverted index. Note that this can however use significant memory.
+默认情况下，在 `text` 字段上禁用 Fielddata。在 [`your_field_name`] 上设置 `fielddata = true` ，以便通过反转索引来加载内存中的 fielddata。请注意，这可能会占用大量内存。
 --
 
 [[before-enabling-fielddata]]
-==== Before enabling fielddata
+==== 启用 fielddata 之前
 
-Before you enable fielddata, consider why you are using a `text` field for
-aggregations, sorting, or in a script.  It usually doesn't make sense to do
-so.
+在启用 fielddata 之前，请考虑使用 `text` 字段进行聚合，排序或在脚本的原因。这样做通常没有意义。
 
-A text field is analyzed before indexing so that a value like
-`New York` can be found by searching for `new` or for `york`.  A `terms`
-aggregation on this field will return a `new` bucket and a `york` bucket, when
-you probably want a single bucket called `New York`.
+在索引之前分析文本字段，以便通过搜索 `new` 或 `york` 找到类似 `New York` 的值。当你可能想要一个名为 `New York` 的桶（bucket）时，这个字段上的 `terms` 聚合将返回一个 `new` 桶（bucket）和一个 `york` 桶（bucket）。
 
-Instead, you should have a `text` field for full text searches, and an
-unanalyzed <<keyword,`keyword`>> field with <<doc-values,`doc_values`>>
-enabled for aggregations, as follows:
+相反，你应该有一个用于全文搜索的 `text` 字段，以及一个未分析的 <<keyword,`keyword`>> 字段，其中包含启用聚合的 <<doc-values,`doc_values`>> ，如下所示：
 
 [source,js]
 ---------------------------------
@@ -74,13 +52,12 @@ PUT my_index
 }
 ---------------------------------
 // CONSOLE
-<1> Use the `my_field` field for searches.
-<2> Use the `my_field.keyword` field for aggregations, sorting, or in scripts.
+<1> 使用 `my_field` 字段用于搜索。
+<2> 使用 `my_field.keyword` 字段用户聚合、排序或在脚本中。
 
-==== Enabling fielddata on `text` fields
+==== 在 `text` 字段中启用 fielddata。
 
-You can enable fielddata on an existing `text` field using the
-<<indices-put-mapping,PUT mapping API>> as follows:
+你可以使用 <<indices-put-mapping,PUT mapping API>> 在现有 `text` 字段上启用 fielddata，如下所示：
 
 [source,js]
 -----------------------------------
@@ -97,24 +74,17 @@ PUT my_index/_mapping/_doc
 // CONSOLE
 // TEST[continued]
 
-<1> The mapping that you specify for `my_field` should consist of the existing
-    mapping for that field, plus the `fielddata` parameter.
+<1> 为 `my_field` 指定的映射应该包含该字段的现有映射以及 `fielddata` 参数。
 
 [[field-data-filtering]]
 ==== `fielddata_frequency_filter`
 
-Fielddata filtering can be used to reduce the number of terms loaded into
-memory, and thus reduce memory usage. Terms can be filtered by _frequency_:
+Fielddata 过滤可用于减少加载到内存中的词项（term）数量，从而减少内存使用量。词项（term）可以通过 _frequency_ 过滤：
 
-The frequency filter allows you to only load terms whose document frequency falls
-between a `min` and `max` value, which can be expressed an absolute
-number (when the number is bigger than 1.0) or as a percentage
-(eg `0.01` is `1%` and `1.0` is `100%`). Frequency is calculated
-*per segment*. Percentages are based on the number of docs which have a
-value for the field, as opposed to all docs in the segment.
+频率过滤器允许你仅加载文档频率介于 `min` 和 `max` 值之间的词项（term），该值可以表示为绝对数字（当数字大于 1.0 时）或百分比（例如 `0.01` 是 `1％` 和 `1.0` 是 `100％` ）。
+频率按 **每个段（per segment）** 计算。百分比基于具有该字段值的文档数，而不是该段（segment）中的所有文档。
 
-Small segments can be excluded completely by specifying the minimum
-number of docs that the segment should contain with `min_segment_size`:
+通过使用 `min_segment_size` 指定段（segment）应包含的最小文档数，可以完全排除小段：
 
 [source,js]
 --------------------------------------------------
