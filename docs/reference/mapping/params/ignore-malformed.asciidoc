@@ -1,16 +1,11 @@
 [[ignore-malformed]]
 === `ignore_malformed`
 
-Sometimes you don't have much control over the data that you receive.  One
-user may send a `login` field that is a <<date,`date`>>, and another sends a
-`login` field that is an email address.
+有时你无法控制所收到的数据。一个用户可以发送 `login` 字段，该字段是 <<date,`date`>> ，另一个用户发送 `login` 字段，该字段是电子邮件地址。
 
-Trying to index the wrong datatype into a field throws an exception by
-default, and rejects the whole document.  The `ignore_malformed` parameter, if
-set to `true`, allows the exception to be ignored.  The malformed field is not
-indexed, but other fields in the document are processed normally.
+尝试将错误的数据类型索引到字段中默认情况下会抛出异常，并拒绝整个文档。 `ignore_malformed` 参数，如果设置为 `true` ，则允许忽略该异常。格式错误的字段未编入索引，但文档中的其他字段正常处理。
 
-For example:
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -45,19 +40,16 @@ PUT my_index/_doc/2
 --------------------------------------------------
 // CONSOLE
 // TEST[catch:bad_request]
-<1> This document will have the `text` field indexed, but not the `number_one` field.
-<2> This document will be rejected because `number_two` does not allow malformed values.
+<1> 该文档索引了 `text` 字段，而没有索引 `number_two` 字段。
+<2> 该文档会被拒绝，因为 `number_two` 字段不允许格式错误的值。
 
-TIP: The `ignore_malformed` setting is allowed to have different settings for
-fields of the same name in the same index.  Its value can be updated on
-existing fields using the <<indices-put-mapping,PUT mapping API>>.
+提示：允许 `ignore_malformed` 设置对同一索引中同名字段的设置不同。 可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上更新其值。
 
 
 [[ignore-malformed-setting]]
-==== Index-level default
+==== Index-level 的默认值
 
-The `index.mapping.ignore_malformed` setting can be set on the index level to
-allow to ignore malformed content globally across all mapping types.
+可以在索引级别设置 `index.mapping.ignore_malformed` 设置，以允许在所有映射类型中全局忽略格式错误的内容。
 
 [source,js]
 --------------------------------------------------
@@ -83,15 +75,11 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-<1> The `number_one` field inherits the index-level setting.
-<2> The `number_two` field overrides the index-level setting to turn off `ignore_malformed`.
+<1> `number_one` 字段继承索引级设置。
+<2> `number_two` 字段覆盖索引级别设置以关闭 `ignore_malformed` 。
 
-==== Dealing with malformed fields
+==== 处理格式错误的字段
 
-Malformed fields are silently ignored at indexing time when `ignore_malformed`
-is turned on. Whenever possible it is recommended to keep the number of
-documents that have a malformed field contained, or queries on this field will
-become meaningless. Elasticsearch makes it easy to check how many documents
-have malformed fields by using `exist` or `term` queries on the special
-<<mapping-ignored-field,`_ignored`>> field.
+当 `ignore_malformed` 打开时，在索引时默认忽略格式错误的字段。建议尽可能保留包含格式错误字段的文档数量，否则对该字段的查询将变得毫无意义。
+通过在特殊的 <<mapping-ignored-field,`_ignored`>> 字段上使用 `exist` 或 `term` 查询， Elasticsearch 可以轻松检查有多少文档有错误字段。
 
