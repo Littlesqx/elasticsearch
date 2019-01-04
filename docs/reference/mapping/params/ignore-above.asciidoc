@@ -1,10 +1,10 @@
 [[ignore-above]]
 === `ignore_above`
 
-Strings longer than the `ignore_above` setting will not be indexed or stored.
-For arrays of strings, `ignore_above` will be applied for each array element separately and string elements longer than `ignore_above` will not be indexed or stored.
+长于 `ignore_above` 配置的字符串不会被索引和存储。
+对于字符串数组， `ignore_above` 将分别应用于每个数组元素，并且不会索引或存储长于 `ignore_above` 的字符串元素。
 
-NOTE: All strings/array elements will still be present in the `_source` field, if the latter is enabled which is the default in Elasticsearch.
+注意：如果启用了后者，那么所有字符串/数组元素仍将出现在 `_source` 字段中，这是 Elasticsearch 中的默认值。
 
 [source,js]
 --------------------------------------------------
@@ -44,18 +44,13 @@ GET _search <4>
 }
 --------------------------------------------------
 // CONSOLE
-<1> This field will ignore any string longer than 20 characters.
-<2> This document is indexed successfully.
-<3> This document will be indexed, but without indexing the `message` field.
-<4> Search returns both documents, but only the first is present in the terms aggregation.
+<1> 该字段将忽略任何超过 20 个字符的字符串。
+<2> 该文档已成功编入索引。
+<3> 该文档将被编入索引，但不对 `message` 字段编制索引。
+<4> 搜索返回两个文档，但只有第一个文档存在于聚合中。
 
-TIP: The `ignore_above` setting can be updated on
-existing fields using the <<indices-put-mapping,PUT mapping API>>.
+提示：可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上更新 `ignore_above` 设置。
 
-This option is also useful for protecting against Lucene's term byte-length
-limit of `32766`.
+此选项对于防止 Lucene 的术语字节长度限制为 `32766` 也很有用。
 
-NOTE: The value for `ignore_above` is the _character count_, but Lucene counts
-bytes. If you use UTF-8 text with many non-ASCII characters, you may want to
-set the limit to `32766 / 4 = 8191` since UTF-8 characters may occupy at most
-4 bytes.
+注意： `ignore_above` 的值是 __字符计数__，但 Lucene 是计算字节数。你如果使用带有许多非 ASCII 字符的 UTF-8 文本，可能需要将限制设置为 `32766/4 = 8191` ，因为 UTF-8 字符最多可占用 4 个字节。
