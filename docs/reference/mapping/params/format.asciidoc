@@ -1,13 +1,9 @@
 [[mapping-date-format]]
 === `format`
 
-In JSON documents, dates are represented as strings. Elasticsearch uses a set
-of preconfigured formats to recognize and parse these strings into a long
-value representing _milliseconds-since-the-epoch_ in UTC.
+在 JSON 文档中，日期表示为字符串。Elasticsearch 使用一组预配置格式来识别这些字符串并将其解析为一个长值，该值表示 UTC 中的 _milliseconds-the-epoch_ 。
 
-Besides the <<built-in-date-formats,built-in formats>>, your own
-<<custom-date-formats,custom formats>> can be specified using the familiar
-`yyyy/MM/dd` syntax:
+除了<<built-in-date-formats,内置格式>>，还可以使用熟悉的 `yyyy/MM/dd` 语法指定<<custom-date-formats,自定义格式>>：
 
 [source,js]
 --------------------------------------------------
@@ -27,262 +23,202 @@ PUT my_index
 --------------------------------------------------
 // CONSOLE
 
-Many APIs which support date values also support <<date-math,date math>>
-expressions, such as `now-1m/d` -- the current time, minus one month, rounded
-down to the nearest day.
+支持日期值和<<date-math,日期匹配>>表达式的很多 APIs，例如 `now-1m/d` -- 当前时间减去一个月，会被四舍五入到最近的一天。
 
 [[custom-date-formats]]
-==== Custom date formats
+==== 自定义日期格式
 
-Completely customizable date formats are supported.  The syntax for these is explained
-http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html[in the Joda docs].
+支持完全可自定义的日期格式。语法在 http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html[Joda 文档]进行了解释。
 
 [[built-in-date-formats]]
-==== Built In Formats
+==== 内置格式
 
-Most of the below formats have a `strict` companion format, which means that
-year, month and day parts of the week must use respectively 4, 2 and 2 digits
-exactly, potentially prepending zeros. For instance a date like `5/11/1` would
-be considered invalid and would need to be rewritten to `2005/11/01` to be
-accepted by the date parser.
+以下大多数格式都有 `严格` 的伴生格式，这意味着年月日必须分别准确地使用 4，2，2 位数字，可能会补 0。例如，日期 `5/11/1` 会被认为是不合法的，并且需要改写为 `2005/11/01` 才可以被日期解释器接受。
 
-To use them, you need to prepend `strict_` to the name of the date format, for
-instance `strict_date_optional_time` instead of `date_optional_time`.
+使用严格日期格式需要在日期格式的名称加上 `strict_` 前缀，例如 `strict_date_optional_time` 代替 `date_optional_time`。
 
-These strict date formats are especially useful when
-<<date-detection,date fields are dynamically mapped>> in order to make sure to
-not accidentally map irrelevant strings as dates.
+严格日期特别有用，当日期字段被动态映射以确保没有意外地将不相关的字符串映射为日期。
 
-The following tables lists all the defaults ISO formats supported:
+下表列出了支持的所有默认 ISO 格式：
 
 `epoch_millis`::
 
-    A formatter for the number of milliseconds since the epoch. Note, that
-    this timestamp is subject to the limits of a Java `Long.MIN_VALUE` and
-    `Long.MAX_VALUE`.
+    毫秒级时间戳。注意，它受 Java 的 `Long.MIN_VALUE` 和 `Long.MAX_VALUE` 限制。
 
 `epoch_second`::
 
-    A formatter for the number of seconds since the epoch. Note, that this
-    timestamp is subject to the limits of a Java `Long.MIN_VALUE` and `Long.
-    MAX_VALUE` divided by 1000 (the number of milliseconds in a second).
+    秒级时间戳。注意，它受 Java 的 `Long.MIN_VALUE` /1000 和 `Long.MAX_VALUE` /1000 限制。
 
-[[strict-date-time]]`date_optional_time` or `strict_date_optional_time`::
+[[strict-date-time]]`date_optional_time` 或 `strict_date_optional_time`::
 
-    A generic ISO datetime parser where the date is mandatory and the time is
-    optional.
-    http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateOptionalTimeParser--[Full details here].
+    通用的 ISO 日期时间分析器，其中日期是必需的，时间是可选的。
+    http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateOptionalTimeParser--[全部详情].
 
 `basic_date`::
 
-    A basic formatter for a full date as four digit year, two digit month of
-    year, and two digit day of month: `yyyyMMdd`.
+    日期的基本格式：四位数的年，两位数的月和两位数的日。
 
 `basic_date_time`::
 
-    A basic formatter that combines a basic date and time, separated by a 'T':
-    `yyyyMMdd'T'HHmmss.SSSZ`.
+    由日期和时间组成的基本格式，以 'T' 分隔：`yyyyMMdd'T'HHmmss.SSSZ` 。
 
 `basic_date_time_no_millis`::
 
-    A basic formatter that combines a basic date and time without millis,
-    separated by a 'T': `yyyyMMdd'T'HHmmssZ`.
+    由日期和时间（没有毫秒）组成的基本格式，以 'T' 分隔：`yyyyMMdd'T'HHmmssZ` 。
 
 `basic_ordinal_date`::
 
-    A formatter for a full ordinal date, using a four digit year and three
-    digit dayOfYear: `yyyyDDD`.
+    四位数年份和三位数年份日组成的完整序数日期。
 
 `basic_ordinal_date_time`::
 
-    A formatter for a full ordinal date and time, using a four digit year and
-    three digit dayOfYear: `yyyyDDD'T'HHmmss.SSSZ`.
+    四位数年份和三位数年份日组成的完整序数日期和时间：`yyyyDDD'T'HHmmss.SSSZ` 。
 
 `basic_ordinal_date_time_no_millis`::
 
-    A formatter for a full ordinal date and time without millis, using a four
-    digit year and three digit dayOfYear: `yyyyDDD'T'HHmmssZ`.
+    不带毫秒的完整序数日期和时间的格式化程序，使用四位数字的年份和三位数字的年份日：`YYYYDDD'T'HHMMSSZ` 。
 
 `basic_time`::
 
-    A basic formatter for a two digit hour of day, two digit minute of hour,
-    two digit second of minute, three digit millis, and time zone offset:
-    `HHmmss.SSSZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数、三位数字的毫秒数和时区偏移量组成的格式： `HHmmss.SSSZ` 。
 
 `basic_time_no_millis`::
 
-    A basic formatter for a two digit hour of day, two digit minute of hour,
-    two digit second of minute, and time zone offset: `HHmmssZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和时区偏移量组成的格式： `HHmmssZ` 。
 
 `basic_t_time`::
 
-    A basic formatter for a two digit hour of day, two digit minute of hour,
-    two digit second of minute, three digit millis, and time zone off set
-    prefixed by 'T': `'T'HHmmss.SSSZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和三位数字的毫秒数和时区偏移量组成，并以 'T' 为前缀的格式： `'T'HHmmss.SSSZ` 。
 
 `basic_t_time_no_millis`::
 
-    A basic formatter for a two digit hour of day, two digit minute of hour,
-    two digit second of minute, and time zone offset prefixed by 'T':
-    `'T'HHmmssZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和时区偏移量组成，并以 'T' 为前缀的格式： `'T'HHmmssZ` 。
 
-`basic_week_date` or `strict_basic_week_date`::
+`basic_week_date` 或 `strict_basic_week_date`::
 
-    A basic formatter for a full date as four digit weekyear, two digit week
-    of weekyear, and one digit day of week: `xxxx'W'wwe`.
+    完整日期的基本格式，四位数字的 weekyear、两位数字的周数和一位数字的天数。
 
-`basic_week_date_time` or `strict_basic_week_date_time`::
+`basic_week_date_time` 或 `strict_basic_week_date_time`::
 
-    A basic formatter that combines a basic weekyear date and time, separated
-    by a 'T': `xxxx'W'wwe'T'HHmmss.SSSZ`.
+    由基本日期和时间组成的格式，以 'T' 分隔： `xxxx'W'wwe'T'HHmmss.SSSZ` 。
 
-`basic_week_date_time_no_millis` or `strict_basic_week_date_time_no_millis`::
+`basic_week_date_time_no_millis` 或 `strict_basic_week_date_time_no_millis`::
 
-    A basic formatter that combines a basic weekyear date and time without
-    millis, separated by a 'T': `xxxx'W'wwe'T'HHmmssZ`.
+    由基本的日期和时间（没有毫秒）组成的格式，以 'T' 分隔： `xxxx'W'wwe'T'HHmmssZ` 。
 
-`date` or `strict_date`::
+`date` 或 `strict_date`::
 
-    A formatter for a full date as four digit year, two digit month of year,
-    and two digit day of month: `yyyy-MM-dd`.
+    由四位数字的年份、两位数字的月份和两位数字的天数组成的格式： `yyyy-MM-dd` 。
 
-`date_hour` or `strict_date_hour`::
+`date_hour` 或 `strict_date_hour`::
 
-    A formatter that combines a full date and two digit hour of day:
-    `yyyy-MM-dd'T'HH`.
+    由完整日期和两位数字的小时数组成的格式： `yyyy-MM-dd'T'HH` 。
 
-`date_hour_minute` or `strict_date_hour_minute`::
+`date_hour_minute` 或 `strict_date_hour_minute`::
 
-    A formatter that combines a full date, two digit hour of day, and two
-    digit minute of hour: `yyyy-MM-dd'T'HH:mm`.
+    由完整日期、两位数字的小时数和两位数字的分钟数组成的格式： `yyyy-MM-dd'T'HH:mm` 。
 
-`date_hour_minute_second` or `strict_date_hour_minute_second`::
+`date_hour_minute_second` 或 `strict_date_hour_minute_second`::
 
-    A formatter that combines a full date, two digit hour of day, two digit
-    minute of hour, and two digit second of minute: `yyyy-MM-dd'T'HH:mm:ss`.
+    由完整日期、两位数字的小时数、两位数字的分钟数和两位数字的秒数组成的格式： `yyyy-MM-dd'T'HH:mm:ss` 。
 
-`date_hour_minute_second_fraction` or `strict_date_hour_minute_second_fraction`::
+`date_hour_minute_second_fraction` 或 `strict_date_hour_minute_second_fraction`::
 
-    A formatter that combines a full date, two digit hour of day, two digit
-    minute of hour, two digit second of minute, and three digit fraction of
-    second: `yyyy-MM-dd'T'HH:mm:ss.SSS`.
+    由完整日期、两位数字的小时数、两位数字的分钟数、两位数字的分钟数和三位数字的秒的分数组成的格式： `yyyy-MM-dd'T'HH:mm:ss.SSS` 。
 
-`date_hour_minute_second_millis` or `strict_date_hour_minute_second_millis`::
+`date_hour_minute_second_millis` 或 `strict_date_hour_minute_second_millis`::
 
-    A formatter that combines a full date, two digit hour of day, two digit
-    minute of hour, two digit second of minute, and three digit fraction of
-    second: `yyyy-MM-dd'T'HH:mm:ss.SSS`.
+    由完整日期、两位数字的小时数、两位数字的分钟数、两位数字的分钟数和三位数字的秒的分数组成的格式： `yyyy-MM-dd'T'HH:mm:ss.SSS` 。
 
-`date_time` or `strict_date_time`::
+`date_time` 或 `strict_date_time`::
 
-    A formatter that combines a full date and time, separated by a 'T':
-    `yyyy-MM-dd'T'HH:mm:ss.SSSZZ`.
+    由完整日期和时间组成，并以 'T' 分隔的格式： `yyyy-MM-dd'T'HH:mm:ss.SSSZZ` 。
 
-`date_time_no_millis` or `strict_date_time_no_millis`::
+`date_time_no_millis` 或 `strict_date_time_no_millis`::
 
-    A formatter that combines a full date and time without millis, separated
-    by a 'T': `yyyy-MM-dd'T'HH:mm:ssZZ`.
+    由完整日期和时间（没有毫秒）组成，并以 'T' 分隔的格式： `yyyy-MM-dd'T'HH:mm:ssZZ` 。
 
-`hour` or `strict_hour`::
+`hour` 或 `strict_hour`::
 
-    A formatter for a two digit hour of day: `HH`
+    两位数字的小时数的格式： `HH` 。
 
-`hour_minute` or `strict_hour_minute`::
+`hour_minute` 或 `strict_hour_minute`::
 
-    A formatter for a two digit hour of day and two digit minute of hour:
-    `HH:mm`.
+    两位数字的小时数和两位数字的分钟数： `HH:mm` 。
 
-`hour_minute_second` or `strict_hour_minute_second`::
+`hour_minute_second` 或 `strict_hour_minute_second`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, and two
-    digit second of minute: `HH:mm:ss`.
+    由两位数字的小时数、两位数字的分钟数和两位数字的秒数组成的格式： `HH:mm:ss` 。
 
-`hour_minute_second_fraction` or `strict_hour_minute_second_fraction`::
+`hour_minute_second_fraction` 或 `strict_hour_minute_second_fraction`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, and three digit fraction of second: `HH:mm:ss.SSS`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和三位数字的秒数的分数组成的格式： `HH:mm:ss.SSS`。
 
-`hour_minute_second_millis` or `strict_hour_minute_second_millis`::
+`hour_minute_second_millis` 或 `strict_hour_minute_second_millis`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, and three digit fraction of second: `HH:mm:ss.SSS`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和三位数字的秒数的分数组成的格式： `HH:mm:ss.SSS` 。
 
-`ordinal_date` or `strict_ordinal_date`::
+`ordinal_date` 或 `strict_ordinal_date`::
 
-    A formatter for a full ordinal date, using a four digit year and three
-    digit dayOfYear: `yyyy-DDD`.
+    由序数日期中四位数字的年份和三位数字的天数组成的格式： `yyyy-DDD` 。
 
-`ordinal_date_time` or `strict_ordinal_date_time`::
+`ordinal_date_time` 或 `strict_ordinal_date_time`::
 
-    A formatter for a full ordinal date and time, using a four digit year and
-    three digit dayOfYear: `yyyy-DDD'T'HH:mm:ss.SSSZZ`.
+    由完整的序数日期和时间（四位数字的年份和三位数字的天数）组成的格式： `yyyy-DDD'T'HH:mm:ss.SSSZZ` 。
 
-`ordinal_date_time_no_millis` or `strict_ordinal_date_time_no_millis`::
+`ordinal_date_time_no_millis` 或 `strict_ordinal_date_time_no_millis`::
 
-    A formatter for a full ordinal date and time without millis, using a four
-    digit year and three digit dayOfYear: `yyyy-DDD'T'HH:mm:ssZZ`.
+    由完整的序数日期和没有毫秒数的时间（四位数字的年份和三位数字的天数）组成的格式： `yyyy-DDD'T'HH:mm:ssZZ` 。
 
-`time` or `strict_time`::
+`time` 或 `strict_time`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, three digit fraction of second, and time zone
-    offset: `HH:mm:ss.SSSZZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数、三位数字的秒数的分数和时间偏移量组成的格式： `HH:mm:ss.SSSZZ` 。
 
-`time_no_millis` or `strict_time_no_millis`::
+`time_no_millis` 或 `strict_time_no_millis`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, and time zone offset: `HH:mm:ssZZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数和时间偏移量组成的格式： `HH:mm:ssZZ` 。
 
-`t_time` or `strict_t_time`::
+`t_time` 或 `strict_t_time`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, three digit fraction of second, and time zone
-    offset prefixed by 'T': `'T'HH:mm:ss.SSSZZ`.
+    由两位数字的小时数、两位数字的分钟数、两位数字的秒数、三位数字的秒数的分数和时间偏移量组成，并以 'T' 为前缀的格式： `'T'HH:mm:ss.SSSZZ` 。
 
-`t_time_no_millis` or `strict_t_time_no_millis`::
+`t_time_no_millis` 或 `strict_t_time_no_millis`::
 
-    A formatter for a two digit hour of day, two digit minute of hour, two
-    digit second of minute, and time zone offset prefixed by 'T': `'T'HH:mm:ssZZ`.
+    由两位数字小时数、两位数字的分钟数、两位数字的秒数和时间偏移量组成的格式，并以 'T' 为前缀： `'T'HH:mm:ssZZ` 。
 
-`week_date` or `strict_week_date`::
+`week_date` 或 `strict_week_date`::
 
-    A formatter for a full date as four digit weekyear, two digit week of
-    weekyear, and one digit day of week: `xxxx-'W'ww-e`.
+    由四位数字的 weekyear、两位数字的周数和一位数字的天数组成的完整日期的格式： `xxxx-'W'ww-e` 。
 
-`week_date_time` or `strict_week_date_time`::
+`week_date_time` 或 `strict_week_date_time`::
 
-    A formatter that combines a full weekyear date and time, separated by a
-    'T': `xxxx-'W'ww-e'T'HH:mm:ss.SSSZZ`.
+    由完整的 weekyear 日期和时间组成，并以 'T' 分隔的格式： `xxxx-'W'ww-e'T'HH:mm:ss.SSSZZ` 。
 
-`week_date_time_no_millis` or `strict_week_date_time_no_millis`::
+`week_date_time_no_millis` 或 `strict_week_date_time_no_millis`::
 
-    A formatter that combines a full weekyear date and time without millis,
-    separated by a 'T': `xxxx-'W'ww-e'T'HH:mm:ssZZ`.
+    由完整的 weekyear 和时间组成，并以 'T' 分隔的格式： `xxxx-'W'ww-e'T'HH:mm:ssZZ` 。
 
-`weekyear` or `strict_weekyear`::
+`weekyear` 或 `strict_weekyear`::
 
-    A formatter for a four digit weekyear: `xxxx`.
+    四位数字的 weekyear： `xxxx` 。
 
-`weekyear_week` or `strict_weekyear_week`::
+`weekyear_week` 或 `strict_weekyear_week`::
 
-    A formatter for a four digit weekyear and two digit week of weekyear:
-    `xxxx-'W'ww`.
+    由四位数字的 weekyear 和两位数字的周数组成的格式： `xxxx-'W'ww` 。
 
-`weekyear_week_day` or `strict_weekyear_week_day`::
+`weekyear_week_day` 或 `strict_weekyear_week_day`::
 
-    A formatter for a four digit weekyear, two digit week of weekyear, and one
-    digit day of week: `xxxx-'W'ww-e`.
+    由四位数字的 weekyear，两位数字的周数和一位数字的天数组成的格式： `xxxx-'W'ww-e` 。
 
-`year` or `strict_year`::
+`year` 或 `strict_year`::
 
-    A formatter for a four digit year: `yyyy`.
+    四位数字的年份： `yyyy` 。
 
-`year_month` or `strict_year_month`::
+`year_month` 或 `strict_year_month`::
 
-    A formatter for a four digit year and two digit month of year: `yyyy-MM`.
+    由四位数字的年份和两位数字的月份组成的格式： `yyyy-MM` 。
 
-`year_month_day` or `strict_year_month_day`::
+`year_month_day` 或 `strict_year_month_day`::
 
-    A formatter for a four digit year, two digit month of year, and two digit
-    day of month: `yyyy-MM-dd`.
+    由四位数字的年份、两位数字的月份和两位数字的天数组成的格式： `yyyy-MM-dd` 。
 
