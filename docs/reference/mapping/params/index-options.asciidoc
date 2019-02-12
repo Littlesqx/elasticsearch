@@ -1,37 +1,30 @@
 [[index-options]]
 === `index_options`
 
-The `index_options` parameter controls what information is added to the
-inverted index, for search and highlighting purposes.  It accepts the
-following settings:
+`index_options` 参数控制哪些信息将被添加到反向索引中，以用于搜索和高亮显示。它接受以下设置：
 
 [horizontal]
 `docs`::
 
-    Only the doc number is indexed.  Can answer the question _Does this term
-    exist in this field?_
+    只有文档编号被索引。可以回答 __这个词条是否存在于这个字段？__
 
 `freqs`::
 
-    Doc number and term frequencies are indexed.  Term frequencies are used to
-    score repeated terms higher than single terms.
+    Doc 编号和词条频率被编入索引。词条频率用于对重复词条进行高于单个词条的评分。
 
 `positions`::
 
-    Doc number, term frequencies, and term positions (or order) are indexed.
-    Positions can be used for
-    <<query-dsl-match-query-phrase,proximity or phrase queries>>.
+    文档编号，词条频率和词条位置（或顺序）被编入索引。
+    位置可用于<<query-dsl-match-query-phrase邻近或短语查询>> 。
 
 `offsets`::
 
-    Doc number, term frequencies, positions, and start and end character
-    offsets (which map the term back to the original string) are indexed.
-    Offsets are used by the <<unified-highlighter,unified highlighter>> to speed up highlighting.
+    文档编号，词条频率，位置以及开始和结束字符偏移（将词条映射回原始字符串）都被编入索引。
+    偏移量被 <<unified-highlighter,unified highlighter>> 用作加速高亮。
 
-WARNING: The `index_options` parameter has been deprecated for <<number,Numeric fields>> in 6.0.0.
+WARNING: 对于 6.0.0 中的 <<number,Numeric 字段>>，不推荐使用 `index_options` 参数。
 
-<<mapping-index,Analyzed>> string fields use `positions` as the default, and
-all other fields use `docs` as the default.
+<<mapping-index,Analyzed>> 字符串字段默认使用 `positions` ，而其它全部字段默认使用 `docs` 。
 
 [source,js]
 --------------------------------------------------
@@ -69,4 +62,4 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `text` field will use the postings for the highlighting by default because `offsets` are indexed.
+<1> 默认情况下，因为 `offsets` 被索引， `text` 字段将使用 postings 进行高亮显示。
