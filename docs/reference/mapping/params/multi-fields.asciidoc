@@ -1,10 +1,7 @@
 [[multi-fields]]
 === `fields`
 
-It is often useful to index the same field in different ways for different
-purposes.  This is the purpose of _multi-fields_. For instance, a `string`
-field could be mapped as a `text` field for full-text
-search, and as a `keyword` field for sorting or aggregations:
+为不同目的以不同方式索引相同字段通常很有用。这也是 _multi-fields_ 的目的。例如， `string` 字段可以映射为全文搜索的 `text` 字段，以及作为排序或聚合的 `keyword` 字段：
 
 [source,js]
 --------------------------------------------------
@@ -56,23 +53,18 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `city.raw` field is a `keyword` version of the `city` field.
-<2> The `city` field can be used for full text search.
-<3> The `city.raw` field can be used for sorting and aggregations
+<1> `city.raw` 字段是 `city` 字段的 `keyword` 类型的版本。
+<2> `city` 字段可以被用于全文搜索。
+<3> `city.raw` 字段可以被用于排序和聚合。
 
-NOTE: Multi-fields do not change the original `_source` field.
+NOTE: 多字段不会改变原始的 `_source` 字段。
 
-TIP: The `fields` setting is allowed to have different settings for fields of
-the same name in the same index.  New multi-fields can be added to existing
-fields using the <<indices-put-mapping,PUT mapping API>>.
+TIP: 允许对同一索引中的同名字段设置不同的 `fields` 设置。新多字段可以通过 <<indices-put-mapping,PUT mapping API>> 被添加到已经存在的字段。
 
-==== Multi-fields with multiple analyzers
+==== 具有多分析器的多字段
 
-Another use case of multi-fields is to analyze the same field in different
-ways for better relevance. For instance we could index a field with the
-<<analysis-standard-analyzer,`standard` analyzer>> which breaks text up into
-words, and again with the <<english-analyzer,`english` analyzer>>
-which stems words into their root form:
+多字段的另一个用例是以不同方式分析相同字段以获得更好的相关性。例如，我们可以使用 <<analysis-standard-analyzer,`standard` 分析器>>索引一个字段，这会把文本分成单词；
+相反， <<english-analyzer,`english` 分析器>>则将单词还原成根形式：
 
 [source,js]
 --------------------------------------------------
@@ -117,18 +109,17 @@ GET my_index/_search
 --------------------------------------------------
 // CONSOLE
 
-<1> The `text` field uses the `standard` analyzer.
-<2> The `text.english` field uses the `english` analyzer.
-<3> Index two documents, one with `fox` and the other with `foxes`.
-<4> Query both the `text` and `text.english` fields and combine the scores.
+<1> `text` 字段使用 `standard` 分析器。
+<2> `text.english` 字段使用 `english` 分析器。
+<3> 索引两个文档，一个使用 `fox` 而另一个使用 `foxes` 。
+<4> 同时查询 `text` 和 `text.english` 字段，并结合分数。
 
 The `text` field contains the term `fox` in the first document and `foxes` in
 the second document.  The `text.english` field contains `fox` for both
 documents, because `foxes` is stemmed to `fox`.
 
-The query string is also analyzed by the `standard` analyzer for the `text`
-field, and by the `english` analyzer` for the `text.english` field.  The
-stemmed field allows a query for `foxes` to also match the document containing
-just `fox`.  This allows us to match as many documents as possible.  By also
-querying the unstemmed `text` field, we improve the relevance score of the
-document which matches `foxes` exactly.
+`text` 字段在第一个文档中包含术语 `fox` ，在第二个文档中包含 `foxes` 。 `text.english` 字段包含两个文件的 `foxes` ，因为 `foxes` 源自 `fox` 。
+
+查询字符串也由 `standard` 分析器分析 `text` 字段，并由 `english` 分析器分析 `text.english` 字段。
+词干字段允许查询 `foxes` 也匹配仅包含 `fox` 的文档。这允许我们尽可能匹配多一些文档。
+通过查询未经过干扰的 `text` 字段，我们提高了与 `foxes` 完全匹配的文档的相关性得分。
