@@ -1,6 +1,5 @@
 [[mapping-index]]
 === `index`
 
-The `index` option controls whether field values are indexed. It accepts `true`
-or `false` and defaults to `true`. Fields that are not indexed are not queryable.
+`index` 选项控制是否索引字段值。它接受 `true` 或 `false` 并默认为 `true` 。未索引的字段不可查询。
 
