@@ -1,22 +1,14 @@
 [[norms]]
 === `norms`
 
-Norms store various normalization factors that are later used at query time
-in order to compute the score of a document relatively to a query.
+规范存储稍后在查询时使用的各种归一化因子，以便相对于查询计算文档的分数。
 
-Although useful for scoring, norms also require quite a lot of disk
-(typically in the order of one byte per document per field in your index, even
-for documents that don't have this specific field). As a consequence, if you
-don't need scoring on a specific field, you should disable norms on that
-field. In  particular, this is the case for fields that are used solely for
-filtering or aggregations.
+尽管 norms 对评分很有用，但也需要相当多的磁盘空间（通常在索引中每个文档每个字段大约一个字节，即使对于没有此特定字段的文档也是如此）。
+因此，你如果不需要对特定字段进行评分，则应禁用该字段上的 norms。特别地，对于仅用于过滤或聚合的字段就是应该如此。
 
-TIP: The `norms` setting must have the same setting for fields of the
-same name in the same index.  Norms can be disabled on existing fields using
-the <<indices-put-mapping,PUT mapping API>>.
+TIP: `norms` 设置必须与同一索引中同名字段的设置相同。可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上禁用 norms。
 
-Norms can be disabled (but not reenabled) after the fact, using the
-<<indices-put-mapping,PUT mapping API>> like so:
+之后，使用 <<indices-put-mapping,PUT mapping API>> 可以禁用（但不能重新启用） norms：
 
 [source,js]
 ------------
@@ -33,8 +25,5 @@ PUT my_index/_mapping/_doc
 // CONSOLE
 // TEST[s/^/PUT my_index\n/]
 
-NOTE: Norms will not be removed instantly, but will be removed as old segments
-are merged into new segments as you continue indexing new documents. Any score
-computation on a field that has had norms removed might return inconsistent
-results since some documents won't have norms anymore while other documents
-might still have norms.
+NOTE: Norms 不会立即删除，但会在你继续索引新文档时将旧段合并为新段时删除。
+对已删除 Norms 的字段进行任何分数计算可能会返回不一致的结果，因为某些文档不再具有 Norms，而其他文档可能仍具有 Norms。
