@@ -1,14 +1,9 @@
 [[normalizer]]
 === `normalizer`
 
-The `normalizer` property of <<keyword,`keyword`>> fields is similar to
-<<analyzer,`analyzer`>> except that it guarantees that the analysis chain
-produces a single token.
+<<keyword,`keyword`>> 字段的 `normalizer` 属性除了会保证在分析链产生单个令牌之外，类似于 <<analyzer,`analyzer`>> 。
 
-The `normalizer` is applied prior to indexing the keyword, as well as at
-search-time when the `keyword` field is searched via a query parser such as
-the <<query-dsl-match-query,`match`>> query or via a term level query 
-such as the <<query-dsl-term-query,`term`>> query.
+`normalizer` 在以下场景被应用：在索引关键字之前，以及在通过查询解析器（例如 <<query-dsl-match-query,`match`>> 查询）或者通过词项级（term level）查询（例如 <<query-dsl-term-query,`term`>> 查询）搜索 `keyword` 字段时的搜索时间。
 
 [source,js]
 --------------------------------
@@ -74,8 +69,7 @@ GET index/_search
 --------------------------------
 // CONSOLE
 
-The above queries match documents 1 and 2 since `BÀR` is converted to `bar` at
-both index and query time.
+上述查询与文档 1 和文档 2 匹配，因为 `BÀR` 在索引和查询时都转换为 `bar` 。
 
 [source,js]
 ----------------------------
@@ -116,8 +110,8 @@ both index and query time.
 ----------------------------
 // TESTRESPONSE[s/"took".*/"took": "$body.took",/]
 
-Also, the fact that keywords are converted prior to indexing also means that
-aggregations return normalized values:
+
+此外，关键字在索引之前转换的事实也意味着聚合返回标准化后（normalized）的值：
 
 [source,js]
 ----------------------------
