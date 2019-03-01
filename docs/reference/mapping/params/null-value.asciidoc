@@ -1,12 +1,9 @@
 [[null-value]]
 === `null_value`
 
-A `null` value cannot be indexed or searched.  When a field is set to `null`,
-(or an empty array or an array of `null` values)  it is treated as though that
-field has no values.
+无法索引或搜索 `null` 值。当一个字段设置为 `null` （或一个空数组，或一个 `null` 值数组）时，它被视为该字段没有值。
 
-The `null_value` parameter allows you to replace explicit `null` values with
-the specified value so that it can be indexed and searched.  For instance:
+`null_value` 参数允许你用指定的值替换显式的 `null` 值，以便可以对其进行索引和搜索。例如：
 
 [source,js]
 --------------------------------------------------
@@ -44,12 +41,10 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> Replace explicit `null` values with the term `NULL`.
-<2> An empty array does not contain an explicit `null`, and so won't be replaced with the `null_value`.
-<3> A query for `NULL` returns document 1, but not document 2.
+<1> 用词条 `NULL` 替换显式的 `null` 值。
+<2> 空数组不包含显式的 `null` ，因此不会被 `null_value` 替换。
+<3> 对 `NULL` 的查询返回文档 1，但不返回文档 2。
 
-IMPORTANT: The `null_value` needs to be the same datatype as the field.  For
-instance, a `long` field cannot have a string `null_value`.
+IMPORTANT: `null_value` 需要与字段的数据类型相同。例如， `long` 字段不能有字符串 `null_value` 。
 
-NOTE: The `null_value` only influences how data is indexed, it doesn't modify
-the `_source` document.
+NOTE: `null_value` 只影响数据的索引方式，它不会修改 `_source` 文档。
