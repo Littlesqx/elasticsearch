@@ -1,17 +1,15 @@
 [[properties]]
-=== `properties`
+=== `properties` 
 
-Type mappings, <<object,`object` fields>> and <<nested,`nested` fields>>
-contain sub-fields, called `properties`. These properties may be of any
-<<mapping-types,datatype>>, including `object` and `nested`.  Properties can
-be added:
+类型映射，<<object,`object` 字段>>和 <<nested,`nested` 字段>>（包括子字段），称为 `properties` 。
+这些属性可以是任何 <<mapping-types,datatype>>，包括 `object` 和 `nested` 。属性可以通过以下方式添加：
 
-* explicitly by defining them when <<indices-create-index,creating an index>>.
+* 通过在<<indices-create-index,创建索引>>时定义。
 * explicitly by defining them when adding or updating a mapping type with the <<indices-put-mapping,PUT mapping>> API.
-* <<dynamic-mapping,dynamically>> just by indexing documents containing new fields.
+* 通过使用 <<indices-put-mapping,PUT mapping>> API 添加或更新映射类型时显式定义。
+* <<dynamic-mapping,动态地添加>>，但只在通过索引包含新字段的文档时。
 
-Below is an example of adding `properties` to a mapping type, an `object`
-field, and a `nested` field:
+下面是一个将 `properties` 添加到映射类型, `object` 字段和 `nested` 字段的示例：
 
 [source,js]
 --------------------------------------------------
@@ -58,19 +56,16 @@ PUT my_index/_doc/1 <4>
 }
 --------------------------------------------------
 // CONSOLE
-<1> Properties under the `_doc` mapping type.
-<2> Properties under the `manager` object field.
-<3> Properties under the `employees` nested field.
-<4> An example document which corresponds to the above mapping.
+<1> `_doc` 映射类型下的 Properties。
+<2> `manager` 对象字段下的 Properties。
+<3> `employees` nested 字段下的 Properties。
+<4> 对应于上述映射的示例文档。
 
-TIP: The `properties` setting is allowed to have different settings for fields
-of the same name in the same index.  New properties can be added to existing
-fields using the <<indices-put-mapping,PUT mapping API>>.
+TIP: 允许 `properties` 设置对同一索引中同名字段的设置不同。可以使用 <<indices-put-mapping,PUT mapping API>> 将新属性添加到现有字段。
 
-==== Dot notation
+==== 点符号（Dot notation）
 
-Inner fields can be referred to in queries, aggregations, etc., using _dot
-notation_:
+可以在查询、聚合等中引用内部字段，通过 __点符号__ ：
 
 [source,js]
 --------------------------------------------------
@@ -101,4 +96,4 @@ GET my_index/_search
 // CONSOLE
 // TEST[continued]
 
-IMPORTANT: The full path to the inner field must be specified.
+IMPORTANT: 必须指定内部字段的完整路径。
