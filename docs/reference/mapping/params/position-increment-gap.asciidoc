@@ -1,15 +1,11 @@
-[[position-increment-gap]]
+[[position-increment-gap]] 
 === `position_increment_gap`
 
-<<mapping-index,Analyzed>> text fields take term <<index-options,positions>>
-into account, in order to be able to support
-<<query-dsl-match-query-phrase,proximity or phrase queries>>.
-When indexing text fields with multiple values a "fake" gap is added between
-the values to prevent most phrase queries from matching across the values. The
-size of this gap is configured using `position_increment_gap` and defaults to
-`100`.
+<<mapping-index,Analyzed>> 文本字段将词项（token） <<index-options,positions>> 考虑在内，以便能够支持 <<query-dsl-match-query-phrase,proximity或phrase 查询>>。
 
-For example:
+使用多个值索引文本字段时，会在值之间添加 `假` 间隙（"fake" gap），以防止大多数短语查询在值之间进行匹配。可使用 `position_increment_gap` 配置此间隙的大小，默认为 `100` 。
+
+例如：
 
 [source,js]
 --------------------------------------------------
@@ -42,12 +38,11 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> This phrase query doesn't match our document which is totally expected.
-<2> This phrase query matches our document, even though `Abraham` and `Lincoln`
-    are in separate strings, because `slop` > `position_increment_gap`.
+<1> 此短语查询与预期的文档不匹配。
+<2> 即使 `Abraham` 和 `Lincoln` 在分开的字符串中，由于 `slop` > `position_increment_gap` ，此短语查询匹配了文档。
 
 
-The `position_increment_gap` can be specified in the mapping.  For instance:
+可以在映射中指定 `position_increment_gap` 。 例如：
 
 [source,js]
 --------------------------------------------------
@@ -80,8 +75,6 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The first term in the next array element will be 0 terms apart from the
-    last term in the previous array element.
-<2> The phrase query matches our document which is weird, but its what we asked
-    for in the mapping.
+<1> 下一个数组元素中的第一项将是前一个数组元素中最后一项的 0 项。
+<2> 奇怪的是短语查询匹配了文档，但它是在映射中要求的。
 
