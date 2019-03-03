@@ -1,38 +1,25 @@
 [[similarity]]
 === `similarity`
 
-Elasticsearch allows you to configure a scoring algorithm or _similarity_ per
-field. The `similarity` setting provides a simple way of choosing a similarity
-algorithm other than the default `BM25`, such as `TF/IDF`.
+Elasticsearch 允许为每个字段配置评分算法或 __相似性（similarity）__ 。`similarity` 设置提供了一种简单方法选择除默认 `BM25` 之外的相似性算法的，例如 `TF/IDF` 。
 
-Similarities are mostly useful for <<text,`text`>> fields, but can also apply
-to other field types.
+相似性主要用于 <<text,`text`>> 字段，但也可以应用于其他字段类型。
 
-Custom similarities can be configured by tuning the parameters of the built-in
-similarities. For more details about this expert options, see the
-<<index-modules-similarity,similarity module>>.
+可以通过调整内置相似性的参数来配置自定义相似性。有关此专业选项的更多详细信息，请参阅 <<index-modules-similarity,similarity 模块>>。
 
-The only similarities which can be used out of the box, without any further
-configuration are:
+相似性的配置是开箱即用的，也十分简单：
 
 `BM25`::
-        The Okapi BM25 algorithm. The algorithm used by default in Elasticsearch and Lucene.
-        See {defguide}/pluggable-similarites.html[Pluggable Similarity Algorithms]
-        for more information.
+        Okapi BM25 算法。它是 Elasticsearch 和 Lucene 默认使用的算法。参阅 {defguide}/pluggable-similarites.html[Pluggable Similarity Algorithms] 以查看更多信息。
 
 `classic`::
-        The TF/IDF algorithm which used to be the default in Elasticsearch and
-        Lucene. See {defguide}/practical-scoring-function.html[Lucene’s Practical Scoring Function]
-        for more information.
+        TF/IDF 算法曾经是 Elasticsearch 和 Lucene 默认使用的算法。参阅 {defguide}/practical-scoring-function.html[Lucene’s Practical Scoring Function] 以查看更多信息。
 
 `boolean`::
-        A simple boolean similarity, which is used when full-text ranking is not needed
-        and the score should only be based on whether the query terms match or not.
-        Boolean similarity gives terms a score equal to their query boost.
+        一个简单的布尔相似性，在不需要全文排名时使用，分数应仅基于词项（term）查询是否匹配。布尔相似度为词项(term)提供与其查询提升相等的分数。
 
 
-The `similarity` can be set on the field level when a field is first created,
-as follows:
+首次创建字段时，可以在字段级别设置 `similarity` ，如下所示：
 
 [source,js]
 --------------------------------------------------
@@ -54,5 +41,5 @@ PUT my_index
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `default_field` uses the `BM25` similarity.
-<2> The `boolean_sim_field` uses the `boolean` similarity.
+<1> `default_field` 使用 `BM25` 相似性算法。
+<2> `boolean_sim_field` 使用 `boolean` 相似性算法。
