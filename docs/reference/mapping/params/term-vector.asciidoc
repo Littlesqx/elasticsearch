@@ -1,31 +1,26 @@
 [[term-vector]]
 === `term_vector`
 
-Term vectors contain information about the terms produced by the
-<<analysis,analysis>> process, including:
+项向量（Term vector）包含有关<<analysis,分析>>过程产生的词项（term）的信息，包括：
 
-* a list of terms.
-* the position (or order) of each term.
-* the start and end character offsets mapping the term to its
-  origin in the original string.
+* 一组词项（term）。
+* 每一个词项的位置（或序号）。
+* 映射词项（term）的首字符和尾字符与原始字符串原点的偏移量。
 
-These term vectors can be stored so that they can be retrieved for a
-particular document.
+可以存储这些项向量（Term vector），以便可以针对特定文档检索它们。
 
-The `term_vector` setting accepts:
+`term_vector` 设置接受以下参数：
 
 [horizontal]
-`no`::                      No term vectors are stored. (default)
-`yes`::                     Just the terms in the field are stored.
-`with_positions`::          Terms and positions are stored.
-`with_offsets`::            Terms and character offsets are stored.
-`with_positions_offsets`::  Terms, positions, and character offsets are stored.
+`no`::                      不存储项向量（term vector），默认。
+`yes`::                     仅存储字段中的词项（term）。
+`with_positions`::          存储词项（term）和位置。
+`with_offsets`::            存储词项（term）和字符偏移量。
+`with_positions_offsets`::  存储词项（term）、位置和字符偏移量。
 
-The fast vector highlighter requires `with_positions_offsets`.  The term
-vectors API can retrieve whatever is stored.
+fast vector highlighter 需要设置 `with_positions_offsets` 。项向量（term vector） API 可以检索存储的任何内容。
 
-WARNING:  Setting `with_positions_offsets` will double the size of a field's
-index.
+WARNING: 设置 `with_positions_offsets` 将使字段索引的大小加倍。
 
 [source,js]
 --------------------------------------------------
@@ -63,6 +58,5 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The fast vector highlighter will be used by default for the `text` field
-    because term vectors are enabled.
+<1> 默认情况下，fast vector highlighter 将用于 `text` 字段，因为项向量（term vector）已启用。
 
