@@ -1,20 +1,12 @@
 [[mapping-store]]
 === `store`
 
-By default, field values are <<mapping-index,indexed>> to make them searchable,
-but they are not _stored_.  This means that the field can be queried, but the
-original field value cannot be retrieved.
+默认情况下，字段值会被<<mapping-index,索引>>以使其可搜索，但它们不是_stored_。这意味着可以查询该字段，但无法检索原始字段值。
 
-Usually this doesn't matter.  The field value is already part of the
-<<mapping-source-field,`_source` field>>, which is stored by default. If you
-only want to retrieve the value of a single field or of a few fields, instead
-of the whole `_source`, then this can be achieved with
-<<search-request-source-filtering,source filtering>>.
+通常这无关紧要。字段值已经是 <<mapping-source-field，`_source` 字段>>的一部分，默认会被存储。
+你如果只想检索单个字段或几个字段的值，而不是整个 `_source` ，那么可以使用 <<search-request-source-filtering,source filtering>> 来实现。
 
-In certain situations it can make sense to `store` a field.  For instance, if
-you have a document with a `title`, a `date`, and a very large `content`
-field, you may want to retrieve just the `title` and the `date` without having
-to extract those fields from a large `_source` field:
+在某些情况下， `store` 字段是有意义的。例如，你如果有一个带有 `title` 、 `date` 和非常大的 `content` 字段的文档，可能想要只检索 `title` 和 `date` 而不必从大的 `_source` 字段中提取其它字段：
 
 [source,js]
 --------------------------------------------------
@@ -52,21 +44,17 @@ GET my_index/_search
 }
 --------------------------------------------------
 // CONSOLE
-<1> The `title` and `date` fields are stored.
-<2> This request will retrieve the values of the `title` and `date` fields.
+<1> `title` 和 `date` 字段被存储。
+<2> 该请求将检索 `title` 和 `date` 字段的值。
 
 [NOTE]
-.Stored fields returned as arrays
+.存储的字段作为数组返回
 ======================================
 
-For consistency, stored fields are always returned as an _array_ because there
-is no way of knowing if the original field value was a single value, multiple
-values, or an empty array.
+为保持一致性，存储的字段始终作为 _array_ 返回，因为无法知道原始字段值是单个值、多个值还是空数组。
 
-If you need the original value, you should retrieve it from the `_source`
-field instead.
+你如果需要原始值，则应该从 `_source` 字段中检索它。
 
 ======================================
 
-Another situation where it can make sense to make a field stored is for those
-that don't appear in the `_source` field (such as <<copy-to,`copy_to` fields>>).
+存储字段另一种有意义的情况是那些没有出现在 `_source` 字段中的字段（例如 <<copy-to,`copy_to` 字段>>）。
