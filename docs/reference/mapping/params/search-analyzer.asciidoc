@@ -1,16 +1,11 @@
 [[search-analyzer]]
 === `search_analyzer`
 
-Usually, the same <<analyzer,analyzer>> should be applied at index time and at
-search time, to ensure that the terms in the query are in the same format as
-the terms in the inverted index.
+通常，应在索引和搜索时使用相同的 <<analyzer,analyzer>> ，以确保查询中的词项（term）与反向索引中的词项（term）具有相同的格式。
 
-Sometimes, though, it can make sense to use a different analyzer at search
-time, such as when using the  <<analysis-edgengram-tokenizer,`edge_ngram`>>
-tokenizer for autocomplete.
+但有时候，在搜索时使用不同的分析器是有意义的，例如当使用c<<analysis-edgengram-tokenizer,`edge_ngram`>> tokenizerc 进行自动完成（autocomplete）。
 
-By default, queries will use the `analyzer` defined in the field mapping, but
-this can be overridden with the `search_analyzer` setting:
+默认情况下，查询将使用字段映射中定义的 `analyzer` ，但也可以使用 `search_analyzer` 设置来覆盖它：
 
 [source,js]
 --------------------------------------------------
@@ -70,13 +65,12 @@ GET my_index/_search
 --------------------------------------------------
 // CONSOLE
 
-<1> Analysis settings to define the custom `autocomplete` analyzer.
-<2> The `text` field uses the `autocomplete` analyzer at index time, but the `standard` analyzer at search time.
-<3> This field is indexed as the terms: [ `q`, `qu`, `qui`, `quic`, `quick`, `b`, `br`, `bro`, `brow`, `brown`, `f`, `fo`, `fox` ]
-<4> The query searches for both of these terms: [ `quick`, `br` ]
+<1> 分析设置以定自定义 `autocomplete` 分析器。
+<2> `text` 字段在索引时使用 `autocomplete` 分析器，但在搜索时使用 `standard` 分析器。
+<3> 该字段被索引为词条：[`q`,`qu`,`qui`,`quic`,`quick`,`b`,`br`,`bro`,`brow`,`brown`,` f`,`fo`,`fox`]
+<4> 查询搜索这两个词条：[`quick`,`br`]
 
-See {defguide}/_index_time_search_as_you_type.html[Index time search-as-you-
-type] for a full explanation of this example.
+参见 {defguide}/_index_time_search_as_you_type.html[Index time search-as-you-
+type] 以查看该例的详细解释。
 
-TIP: The `search_analyzer` setting can be updated on existing fields
-using the <<indices-put-mapping,PUT mapping API>>.
+TIP: 可以使用 <<indices-put-mapping,PUT mapping API>> 在现有字段上更新 `search_analyzer` 设置。
